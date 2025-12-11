@@ -24,5 +24,6 @@ validation.json                    Validation data set, containing 40 data point
 fineTuning.ipynb                   Notebook file used in Google Colab to fine tune our model.
 index.html                         HTML source code for our project website.
 paper.pdf                          Our paper writeup for the project.
-video.mp4                          A video summarizing our project.
+Video.mp4                          A video summarizing our project.
+
 README.txt                         This readme file.
