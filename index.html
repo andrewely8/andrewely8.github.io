@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Andrew Ely Fine Tuning an LLM</title>
+    <style>
+      body {
+        background-color: #F2F2F2;
+        margin: 0;
+        font-family: Arial, sans-serif;
+      }
+
+      .top {
+        background-color: #6BB6ED;
+        line-height: 1.5;
+        padding: 20px;
+        text-align: center;
+        border-radius: 20px;
+        margin-top: 25px;
+        margin-left: 50px;
+        margin-right: 50px;
+        box-shadow: 0px 5px 10px #888888;
+      }
+
+      .middle {
+        background-color: #6BB6ED;
+        padding: 20px;
+        font-size: 18px;
+        line-height: 1.5;
+        text-align: center;
+        border-radius: 20px;
+        margin-top: 50px;
+        margin-left: 150px;
+        margin-right: 150px;
+        box-shadow: 0px 5px 10px #888888;
+      }
+
+      .video {
+        padding: 20px;
+        text-align: center;
+        margin-top: 50px;
+        margin-left: 250px;
+        margin-right: 250px;
+      }
+
+      .end {
+        background-color: #6BB6ED;
+        line-height: 1.5;
+        font-size: 18px;
+        padding: 20px;
+        text-align: center;
+        border-radius: 20px;
+        margin-top: 50px;
+        margin-left: 150px;
+        margin-right: 150px;
+        box-shadow: 0px 5px 10px #888888;
+      }
+
+      .feedback {
+        background-color: #6BB6ED;
+        line-height: 1.5;
+        font-size: 18px;
+        padding: 20px;
+        text-align: center;
+        border-radius: 20px;
+        margin-top: 50px;
+        margin-left: 150px;
+        margin-right: 150px;
+        margin-bottom: 100px;
+        box-shadow: 0px 5px 10px #888888;
+      }
+
+      h1 {
+        color: whitesmoke;
+        margin: 0;
+      }
+      p {
+        color: whitesmoke;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="top">
+      <h1>Fine Tuning An LLM</h1>
+      <p>by: Andrew Ely</p>
+    </div>
+
+    <div class="middle">
+      <p>
+        This project explores how far we can push a small, math-specialized language model under a very tight compute and budget constraint. I fine-tuned the open-weight Qwen2.5-Math-1.5B model on two different math domains. In Part 1, the goal was to turn the model into a reliable tool for a narrowly defined but useful task: counting how many integers in a bounded interval satisfy a simple linear inequality. Because these problems can be generated and checked automatically, I created my own training, validation, and test sets and used supervised fine-tuning with LoRA adapters. In Part 2, I tried to use similar methods to improve performance on the domain of AIME competition problems, which are much more difficult, open-ended, and reasoning-intensive. 
+        <br>
+        <br>
+        <a href="https://github.com/andrewely8/andrewely8.github.io">Github repo</a>
+        <br>
+        <a href="https://huggingface.co/unsloth/Qwen2.5-Math-1.5B">Qwen2.5-Math-1.5B Model</a>
+        <br>
+        <br>
+        The video below gives an outline of the project.
+
+      </p>
+    </div>
+
+    <div class="video">
+      
+      <video width="640" controls style="border: 12px solid #6BB6ED; border-radius: 20px; box-shadow: 0 0 10px #888888" >
+        <source src="Video.mp4" type="video/mp4">
+          Your browser does not support the video tag.
+      </video>
+
+    </div>
+
+    <div class="end">
+      <p>
+        In Part 1, I generated synthetic training data consisting of questions like “For how many integers x in [a,b] does the inequality f<sub>1</sub>(x) (&ge; , &le; , < , >) f<sub>2</sub>(x) hold?”. I started with 400 training examples and then scaled up to 2000, keeping separate validation and test sets of 40 questions each. Using standard supervised fine-tuning with LoRA on Qwen2.5-Math-1.5B, I tuned only a small fraction of the model’s parameters while keeping the base weights frozen. After some hyperparameter tuning (number of epochs, LoRA rank and scaling, learning rate), my final configuration achieved 82.5% test accuracy, up from a baseline of 25%. The model became much more consistent at rearranging inequalities correctly, identifying the correct integer interval, and returning a single boxed numeric answer in the requested format.
+
+        In Part 2, I applied a similar fine-tuning pipeline to AIME problems. Here I had to work with much messier and smaller datasets: historic AIME questions and answers from 1983–2024, only a subset of which included full worked solutions, plus the 30 problems from AIME 2025. I constructed a combined dataset and split it into training (mostly older years plus 2022–2024 with explanations), validation (2020–2021), and test (2025). Despite training on 890 problems with solutions formatted to end in a boxed final answer, the fine-tuned model did not improve: validation accuracy actually dropped from about 23% to 15%, and test accuracy on AIME 2025 stayed at 10%. The model often produced long, plausible-looking reasoning but still arrived at incorrect answers or formatting, suggesting that with this model size and limited, noisy supervision, fine-tuning isn’t enough to “teach” olympiad-level problem solving.
+      </p>
+    </div>
+
+    <div class="feedback">
+      <p>
+        I’m especially interested in feedback on three aspects of this project: (1) the experimental design, particularly my choices of data splits and evaluation metrics; (2) whether my interpretation of the Part 1 vs Part 2 results is reasonable, given the size and specialization of Qwen2.5-Math-1.5B; and (3) ideas for how one might better approach AIME-level fine-tuning under realistic resource limits, such as different model sizes, better-curated solution data, or alternative training objectives. Any comments on the clarity of the write-up, the presentation in the video, or ways to make the project more rigorous or reproducible in the future are very welcome.
+        <br>
+        <br>
+        Direct email contact: AndrewElyProjectFeedback@gmail.com
+
+      </p>
+
+      <form action="https://formspree.io/f/mdkqwdbb" method="POST">
+        <div>
+          <label for="name" style="color: whitesmoke;">Name (optional):</label><br>
+          <input type="text" id="name" name="name">
+        </div>
+
+        <div style="margin-top: 10px;">
+          <label for="email" style="color: whitesmoke;">Email (optional):</label><br>
+          <input type="email" id="email" name="email">
+        </div>
+
+        <div style="margin-top: 10px;">
+          <label for="message" style="color: whitesmoke;">Your comments:</label><br>
+          <textarea id="message" name="message" required rows="5" cols="40"></textarea>
+        </div>
+
+        <button type="submit" style="margin-top: 10px;">
+          Submit Feedback
+        </button>
+      </form>
+
+
+    </div>
+
+  </body>
+</html>
