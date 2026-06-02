@@ -140,7 +140,6 @@ asyncio.run( custom_site() )
 // END BLOCK
 
 
-
 // this dict is available under PyConfig.config from __main__
 
 config = {
@@ -157,8 +156,8 @@ config = {
     autorun : {{cookiecutter.autorun}},
     PYBUILD : "{{cookiecutter.PYBUILD}}",
     fb_ar   :  1.77,
-    fb_width : "{{cookiecutter.width}}",
-    fb_height : "{{cookiecutter.height}}"
+    fb_width : "200",
+    fb_height : "200"
 }
 
 function show_infobox() {
@@ -177,18 +176,18 @@ function show_infobox() {
 }
 
 </script>
-
+    
     <title>{{cookiecutter.title}}</title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="viewport" content="height=device-height, initial-scale=1.0">
+    <meta name="viewport" content="width=200, initial-scale=1.0">
+    <meta name="viewport" content="height=200, initial-scale=1.0">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes"/>
 
 
     <link rel="icon" type="image/png" href="favicon.png" sizes="16x16">
-
+    <p>by: Andrew Ely</p>
     <style>
         #status {
             display: inline-block;
