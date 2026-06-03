@@ -1,13 +1,25 @@
-let entireScreen = document.getElementById('entireScreen');
+const entireScreen = document.getElementById('entireScreen');
+
+let mouseX = 0;
+let mouseY = 0;
+let gradientSize = '600px';
+let gradientColor = '#FFFFFF';
+let gradientTransparancy = 'transparent 80%';
+
+function updateGradient() {
+  const xPos = mouseX + window.scrollX;
+  const yPos = mouseY + window.scrollY;
+  entireScreen.style.background = `radial-gradient(${gradientSize} at ${xPos}px ${yPos}px, ${gradientColor}, ${gradientTransparancy})`;
+}
 
 window.addEventListener("mousemove", (e) => {
-  let xPos = e.clientX;
-  let yPos = e.clientY;
-  let size = '600px'
-  let color = '#FFFFFF'
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+  updateGradient();
   
-  let transparency = 'transparent 90%';
+});
 
-  entireScreen.style.background = `radial-gradient( 600px at ${xPos}px ${yPos}px, ${color}, ${transparency})`;
-  
+
+window.addEventListener("scroll", () => {
+  updateGradient();
 });

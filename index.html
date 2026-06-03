@@ -1,5 +1,5 @@
  <!-- 
- #F3F3F3
+ #F4F4F4
  #00171F
  #003459
  #007EA7
@@ -12,11 +12,16 @@
   <head>
     <meta charset="UTF-8">
     <title>Andrew Ely Project Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
 
+      html, body {
+        margin: 0;
+        min-height: 100%;
+      }
+
       body {
-         background-color: #F3F3F3;
-         margin: 0;
+         background-color: #E9E9E9;
       }
 
       .portfolioTitleHeader {
@@ -30,7 +35,7 @@
       }
 
       .portfolioProjectBubble {
-        height: 75px;
+        height: 125px;
         margin-left: 10%;
         margin-right: 10%;
         margin-top: 2%;
@@ -49,36 +54,70 @@
         border-width: 3px;
       }
 
-      #entireScreen {
-        height: 100vh;
-        width: 100%;
+      .portfolioProjectBubble #title {
+        display: inline-block;
+        font-size: 32px;
+        margin:0;
+        color: #00171F;
       }
 
-      #leftScreen {
-        
+      .portfolioProjectBubble #description {
         display: inline-block;
-        position: fixed;
-        right: 50%;
-        width: 50%;
-        height: 100%;
-        box-sizing: border-box;
-        border-style: solid;
-        border-color: black;
-        border-width: 2px;
-        margin: 0;
         
+        font-size: 24px;
+        margin:0;
+        color: #00171F;
+      }
+
+      .portfolioProjectBubble #githubLink {
+        display: inline-block;
+        font-size: 24px;
+        margin:0;
+        color: #00171F;
+      }
+
+      .portfolioProjectBubble #liveSiteLink {
+        display: inline-block;
+        font-size: 24px;
+        margin:0;
+        color: #00171F;
+      }
+
+      .portfolioProjectBubble #githubLink:hover {
+        color: red;
+      }
+
+      .portfolioProjectBubble #liveSiteLink:hover {
+        color: red;
+      }
+
+
+
+      #entireScreen {
+        border-top: 2px;
+        border-top-color: #00A8E8;
+        border-top-style: solid;
+        min-height: 100vh;
+        width: 100%;
+        display: flex;
+      }
+
+     #leftScreen {
+        width: 50%;
+        min-height: 100vh;
+        /*box-sizing: border-box;
+        border: 2px solid black;*/
+        margin: 0;
+        position: sticky;
+        top: 0;
+        height: 100vh;
       }
 
       #rightScreen {
-        display: inline-block;
-        position: absolute;
-        left: 50%;
         width: 50%;
-        height: 100%;
-        box-sizing: border-box;
-        border-style: solid;
-        border-color: black;
-        border-width: 2px;
+        min-height: 100vh;
+        /*box-sizing: border-box;
+        border: 2px solid black;*/
         margin: 0;
       }
 
@@ -127,15 +166,48 @@
       <div id="rightScreen">
         <p id="portfolioDescription">I recently graduated Rutgers University with a B.S. in Computer Science, and minor in Mathematics. I am interested in software development, solving puzzles, and math.</p>
         <p class="portfolioTitleHeader">Research Projects</p>
-        <div class="portfolioProjectBubble">Discete Ricci Flow Project</div>
+        
+        <div class="portfolioProjectBubble">
+          <p id="title">Discrete Ricci Flow</p>
+          <p id="description">-- Research Project</p>
+          <a href="https://github.com/andrewely8/Discrete-Ricci-Flow-Research-Project">
+            <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+          </a>
+          <a href="https://github.com/andrewely8/Discrete-Ricci-Flow-Research-Project">
+            <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+          </a>
+        </div>
+
         <p class="portfolioTitleHeader">Personal Projects</p>
         <div class="portfolioProjectBubble">Bouldering Log -- App</div>
         <div class="portfolioProjectBubble">Jane Street Puzzles -- Solutions</div>
-        <div class="portfolioProjectBubble">Capitialist Minning -- Game</div>
+
         <div class="portfolioProjectBubble">
-          Pong -- Game
-          <a href="pong/build/web/index.html">click</a>
+          <p id="title">Capitalist Mining</p>
+          <p id="description">-- Game</p>
+          <a href="https://github.com/andrewely8/CapitalistMining">
+            <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+          </a>
+          <a href="capitialMiningPybagTEST/build/web/index.html">
+            <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+          </a>
         </div>
+
+        <div class="portfolioProjectBubble">
+          <p id="title">Pong</p>
+          <p id="description">-- Game</p>
+          <a href="https://github.com/andrewely8/pong">
+            <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+          </a>
+          <a href="pong/build/web/index.html">
+            <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+          </a>
+        </div>
+
+        <div class="portfolioProjectBubble">EMPTY</div>
+        <div class="portfolioProjectBubble">EMPTY</div>
+        <div class="portfolioProjectBubble">EMPTY</div>
+        <div class="portfolioProjectBubble">EMPTY</div>
 
       </div>
     </div>
