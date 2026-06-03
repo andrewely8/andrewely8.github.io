@@ -1,5 +1,5 @@
  <!-- 
- #FFFFFF
+ #F3F3F3
  #00171F
  #003459
  #007EA7
@@ -13,142 +13,134 @@
     <meta charset="UTF-8">
     <title>Andrew Ely Project Portfolio</title>
     <style>
+
       body {
-        background-color: #F2F2F2;
+         background-color: #F3F3F3;
+         margin: 0;
+      }
+
+      .portfolioTitleHeader {
+        text-align: left;
+        margin-left: 5%;
+        margin-top: 0;
+        margin-bottom: 2%;
+        font-size: 24pt;
+        font-weight: 900;
+        color: #00171F;
+      }
+
+      .portfolioProjectBubble {
+        height: 75px;
+        margin-left: 10%;
+        margin-right: 10%;
+        margin-top: 2%;
+        margin-bottom: 2%;
+        background-color: #00A8E8;
+        border-style: solid;
+        box-sizing: border-box;
+        border-radius: 25px;
+        border-width: 2px;
+        padding: 2%;
+
+      }
+
+      .portfolioProjectBubble:hover {
+        background:#34C5FF;
+        border-width: 3px;
+      }
+
+      #entireScreen {
+        height: 100vh;
+        width: 100%;
+      }
+
+      #leftScreen {
+        
+        display: inline-block;
+        position: fixed;
+        right: 50%;
+        width: 50%;
+        height: 100%;
+        box-sizing: border-box;
+        border-style: solid;
+        border-color: black;
+        border-width: 2px;
         margin: 0;
-        font-family: Arial, sans-serif;
+        
       }
 
-      .top {
-        background-color: #6BB6ED;
-        line-height: 1.5;
-        padding: 20px;
-        text-align: center;
-        border-radius: 20px;
-        margin-top: 25px;
-        margin-left: 50px;
-        margin-right: 50px;
-        box-shadow: 0px 5px 10px #888888;
-      }
-
-      .middle {
-        background-color: #6BB6ED;
-        padding: 20px;
-        font-size: 18px;
-        line-height: 1.5;
-        text-align: center;
-        border-radius: 20px;
-        margin-top: 50px;
-        margin-left: 150px;
-        margin-right: 150px;
-        box-shadow: 0px 5px 10px #888888;
-      }
-
-      .video {
-        padding: 20px;
-        text-align: center;
-        margin-top: 50px;
-        margin-left: 250px;
-        margin-right: 250px;
-      }
-
-      .end {
-        background-color: #6BB6ED;
-        line-height: 1.5;
-        font-size: 18px;
-        padding: 20px;
-        text-align: center;
-        border-radius: 20px;
-        margin-top: 50px;
-        margin-left: 150px;
-        margin-right: 150px;
-        box-shadow: 0px 5px 10px #888888;
-      }
-
-      .feedback {
-        background-color: #6BB6ED;
-        line-height: 1.5;
-        font-size: 18px;
-        padding: 20px;
-        text-align: center;
-        border-radius: 20px;
-        margin-top: 50px;
-        margin-left: 150px;
-        margin-right: 150px;
-        margin-bottom: 100px;
-        box-shadow: 0px 5px 10px #888888;
-      }
-
-      h1 {
-        color: whitesmoke;
+      #rightScreen {
+        display: inline-block;
+        position: absolute;
+        left: 50%;
+        width: 50%;
+        height: 100%;
+        box-sizing: border-box;
+        border-style: solid;
+        border-color: black;
+        border-width: 2px;
         margin: 0;
       }
-      p {
-        color: whitesmoke;
+
+      #authorName {
+        text-align: left;
+        margin-left: 10%;
+        margin-top: 10%;
+        margin-bottom: 0;
+        font-size: 48pt;
+        font-weight: 900;
+        color: #00171F;
       }
+
+      #authorBio {
+        text-align: left;
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-top: 0;
+        font-size: 24pt;
+        font-weight: 700;
+        color: #007EA7;
+      }
+
+      #portfolioDescription {
+        text-align: left;
+        margin-left: 5%;
+        margin-right: 5%;
+        margin-top: 5%;
+        margin-bottom:10%;
+        font-size: 18pt;
+        font-weight: 500;
+        color: #007EA7;
+      }
+
+      
     </style>
   </head>
+
   <body>
 
-    <button type="button" onclick="myFunction()">Button</button>
+    <div id="entireScreen">
+      <div id="leftScreen">
+        <p id="authorName">Andrew Ely</p>
+        <p id="authorBio">Software Developer</p>
+      </div>
+      <div id="rightScreen">
+        <p id="portfolioDescription">I recently graduated Rutgers University with a B.S. in Computer Science, and minor in Mathematics. I am interested in software development, solving puzzles, and math.</p>
+        <p class="portfolioTitleHeader">Research Projects</p>
+        <div class="portfolioProjectBubble">Discete Ricci Flow Project</div>
+        <p class="portfolioTitleHeader">Personal Projects</p>
+        <div class="portfolioProjectBubble">Bouldering Log -- App</div>
+        <div class="portfolioProjectBubble">Jane Street Puzzles -- Solutions</div>
+        <div class="portfolioProjectBubble">Capitialist Minning -- Game</div>
+        <div class="portfolioProjectBubble">
+          Pong -- Game
+          <a href="pong/build/web/index.html">click</a>
+        </div>
 
-    <script src="script.js">
-
-    </script>
-
-    <div class="top">
-      <h1>Project Portfolio</h1>
-      <p>Andrew Ely</p>
+      </div>
     </div>
 
-    <div class="middle">
-      <p>
-        Pong -- Game
-        <br>
-        <br>
-        <a href="pong/build/web/index.html">Play Game</a>
-        <br>
-        <a href="https://github.com/andrewely8/andrewely8.github.io">Github repo</a>
-      </p>
-    </div>
-
-     <div class="middle">
-      <p>
-        Capitalist Mining -- Game
-        <br>
-        <br>
-        <a href="capitialMiningPybagTEST/build/web/index.html">capital Mining</a>
-        <br>
-        <a href="https://github.com/andrewely8/andrewely8.github.io">Github repo</a>
-      </p>
-    </div>
-
-    <div class="middle">
-      <p>
-        Discrete Ricci Flow -- Research Project        
-        <br>
-        <a href="https://github.com/andrewely8/andrewely8.github.io">Github repo</a>
-      </p>
-    </div>
-
-    <div class="middle">
-      <p>
-        Bouldering Log -- Mobile App
-        <br>
-        <a href="https://github.com/andrewely8/andrewely8.github.io">Github repo</a>
-      </p>
-    </div>
-
-    <div class="middle">
-      <p>
-        Jane Street Puzzle Solutions -- Tutorials
-        <br>
-        <a href="https://github.com/andrewely8/andrewely8.github.io">Github repo</a>
-      </p>
-    </div>
-
-    <br>
-    <br>
-
+    <script src="script.js"></script>
   </body>
+
 </html>
