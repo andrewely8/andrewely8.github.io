@@ -1,9 +1,6 @@
  <!-- 
- #F4F4F4
  #00171F
- #003459
- #007EA7
- #00A8E8
+ #00171F
  -->
 
 
@@ -15,13 +12,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
 
+      :root {
+        --PALLETE_COLOR1: #E9E9E9;
+        --PALLETE_COLOR2: #00171F;
+        --PALLETE_COLOR3: #003459;
+        --PALLETE_COLOR4: #007EA7;
+        --PALLETE_COLOR5: #00A8E8;
+      }
+
       html, body {
         margin: 0;
         min-height: 100%;
       }
 
       body {
-         background-color: #E9E9E9;
+         background-color: var(--PALLETE_COLOR1);
       }
 
       .portfolioTitleHeader {
@@ -35,7 +40,8 @@
       }
 
       .portfolioProjectBubble {
-        height: 125px;
+        position: relative;
+        
         margin-left: 10%;
         margin-right: 10%;
         margin-top: 2%;
@@ -63,7 +69,6 @@
 
       .portfolioProjectBubble #description {
         display: inline-block;
-        
         font-size: 24px;
         margin:0;
         color: #00171F;
@@ -71,26 +76,67 @@
 
       .portfolioProjectBubble #githubLink {
         display: inline-block;
+        position: relative;
         font-size: 24px;
         margin:0;
+        z-index: 3;
         color: #00171F;
-      }
+      } 
 
       .portfolioProjectBubble #liveSiteLink {
         display: inline-block;
+        position: relative;
         font-size: 24px;
         margin:0;
+        z-index: 3;
         color: #00171F;
       }
 
+      .bubbleLink {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        display: block;
+      }
+
       .portfolioProjectBubble #githubLink:hover {
-        color: red;
+        color: #004962;
       }
 
       .portfolioProjectBubble #liveSiteLink:hover {
-        color: red;
+        color: #004962;
       }
 
+
+
+
+      .tooltip {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+      }
+
+
+      .tooltiptext {
+        visibility: hidden; /* Hidden by default */
+        width: 100px;
+        left: 50%;
+        margin-left: -50px;
+        margin-bottom: 0;
+        bottom: 100%;
+        background-color: black;
+        color: #ffffff;
+        text-align: center;
+        padding: 5px 0;
+        border-radius: 6px;
+        position: absolute;
+        z-index: 1; /* Ensure tooltip is displayed above content */
+      }
+
+
+      .tooltip:hover .tooltiptext {
+        visibility: visible;
+      }
 
 
       #entireScreen {
@@ -122,6 +168,7 @@
       }
 
       #authorName {
+        animation: 0.5s  alternate slide-in;
         text-align: left;
         margin-left: 10%;
         margin-top: 10%;
@@ -132,6 +179,7 @@
       }
 
       #authorBio {
+        animation: 0.5s  alternate slide-in;
         text-align: left;
         margin-left: 5%;
         margin-right: 5%;
@@ -152,6 +200,18 @@
         color: #007EA7;
       }
 
+
+      @keyframes slide-in {
+        from {
+          translate: -30vw 0;
+          
+        }
+        to {
+          translate: 0 0;
+          
+        }
+      }
+
       
     </style>
   </head>
@@ -165,49 +225,96 @@
       </div>
       <div id="rightScreen">
         <p id="portfolioDescription">I recently graduated Rutgers University with a B.S. in Computer Science, and minor in Mathematics. I am interested in software development, solving puzzles, and math.</p>
+
+
         <p class="portfolioTitleHeader">Research Projects</p>
+
         
-        <div class="portfolioProjectBubble">
-          <p id="title">Discrete Ricci Flow</p>
-          <p id="description">-- Research Project</p>
-          <a href="https://github.com/andrewely8/Discrete-Ricci-Flow-Research-Project">
-            <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
-          </a>
-          <a href="https://github.com/andrewely8/Discrete-Ricci-Flow-Research-Project">
-            <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
-          </a>
-        </div>
+          <div class="portfolioProjectBubble">
+            <a class ="bubbleLink" href="discreteRicciFlow/index.html"></a>
+            <div>
+              <p id="title">Discrete Ricci Flow</p>
+              <p id="description">-- Research Project</p>
+            </div>
+            <a class = "tooltip" href="https://github.com/andrewely8/Discrete-Ricci-Flow-Research-Project" target="_blank">
+              <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+              <p class="tooltiptext">Github Repo</p>
+            </a>
+            <a class = "tooltip" href="discreteRicciFlow/index.html">
+              <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+              <p class="tooltiptext">Live Site</p>
+            </a>
+          </div>
+        
+
 
         <p class="portfolioTitleHeader">Personal Projects</p>
-        <div class="portfolioProjectBubble">Bouldering Log -- App</div>
-        <div class="portfolioProjectBubble">Jane Street Puzzles -- Solutions</div>
 
         <div class="portfolioProjectBubble">
-          <p id="title">Capitalist Mining</p>
-          <p id="description">-- Game</p>
-          <a href="https://github.com/andrewely8/CapitalistMining">
+          <a class ="bubbleLink" href="boulderingLog/index.html"></a>
+          <div>
+            <p id="title">Bouldering Log</p>
+            <p id="description">-- App</p>
+          </div>
+          <a class ="tooltip" href="https://github.com/andrewely8/boulder-log" target="_blank">
             <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+            <p class="tooltiptext">Github Repo</p>
           </a>
-          <a href="CapitialMiningPybagTEST/build/web/index.html">
+          <a class ="tooltip" href="boulderingLog/index.html">
             <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+            <p class="tooltiptext">Live Site</p>
+          </a>
+        </div>
+        
+
+        <div class="portfolioProjectBubble">
+          <a class ="bubbleLink" href="JaneStreetPuzzles/index.html"></a>
+          <div>
+            <p id="title">JaneStreet Puzzles</p>
+            <p id="description">-- Solutions</p>
+          </div>
+          <a class ="tooltip" href="https://github.com/andrewely8/JaneStreetPuzzleSolutions" target="_blank">
+            <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+            <p class="tooltiptext">Github Repo</p>
+          </a>
+          <a class = "tooltip" href="JaneStreetPuzzles/index.html">
+            <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+            <p class="tooltiptext">Live Site</p>
+          </a>
+        </div>
+
+
+        <div class="portfolioProjectBubble">
+          <a class ="bubbleLink" href="CapitialMiningPybagTEST/build/web/index.html"></a>
+          <div>
+            <p id="title">Capitalist Mining</p>
+            <p id="description">-- Game</p>
+          </div>
+          <a class="tooltip" href="https://github.com/andrewely8/CapitalistMining" target="_blank">
+            <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+            <p class="tooltiptext">Github Repo</p>
+          </a>
+          <a class="tooltip" href="CapitialMiningPybagTEST/build/web/index.html">
+            <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+            <p class="tooltiptext">Live Site</p>
           </a>
         </div>
 
         <div class="portfolioProjectBubble">
-          <p id="title">Pong</p>
-          <p id="description">-- Game</p>
-          <a href="https://github.com/andrewely8/pong">
+          <a class ="bubbleLink" href="pong/build/web/index.html"></a>
+          <div>
+            <p id="title">Pong</p>
+            <p id="description">-- Game</p>
+          </div>
+          <a class="tooltip" href="https://github.com/andrewely8/pong" target="_blank">
             <i id ="githubLink" class="fa fa-github" style="font-size:36px"></i>
+            <p class="tooltiptext">Github Repo</p>
           </a>
-          <a href="pong/build/web/index.html">
+          <a class="tooltip" href="pong/build/web/index.html">
             <i id = "liveSiteLink" class="fa fa-play-circle" style="font-size:36px"></i>
+            <p class="tooltiptext">Live Site</p>
           </a>
         </div>
-
-        <div class="portfolioProjectBubble">EMPTY</div>
-        <div class="portfolioProjectBubble">EMPTY</div>
-        <div class="portfolioProjectBubble">EMPTY</div>
-        <div class="portfolioProjectBubble">EMPTY</div>
 
       </div>
     </div>
