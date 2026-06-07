@@ -13,8 +13,8 @@ import asyncio
 #initialize Pygame 
 pygame.init()
 pygame.mixer.init()
-gameMusic = pygame.mixer.music.load("gameAssets/audio/backgroundMusic.mp3")
-clickButtonSound = pygame.mixer.Sound("gameAssets/audio/clickButton.mp3")
+gameMusic = pygame.mixer.music.load("gameAssets/audio/backgroundMusic.ogg")
+clickButtonSound = pygame.mixer.Sound("gameAssets/audio/clickButton.ogg")
 pygame.display.set_caption('capitalist')
 clock = pygame.time.Clock()
 

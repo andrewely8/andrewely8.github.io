@@ -79,7 +79,6 @@ volume3 = pygame.image.load('gameAssets/volume3.png')
 volume4 = pygame.image.load('gameAssets/volume4.png')
 
 
-
 class Arrow(pygame.sprite.Sprite):
 	def __init__(self,arrowDir,startX,startY):
 		super().__init__()
