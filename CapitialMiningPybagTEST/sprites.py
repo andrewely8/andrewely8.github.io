@@ -73,12 +73,17 @@ ratRight1 = pygame.image.load('gameAssets/ratRight1.png')
 ratRight2 = pygame.image.load('gameAssets/ratRight2.png')
 ratLeft1 = pygame.image.load('gameAssets/ratLeft1.png')
 ratLeft2 = pygame.image.load('gameAssets/ratLeft2.png')
+volume1 = pygame.image.load('gameAssets/volume1.png')
+volume2 = pygame.image.load('gameAssets/volume2.png')
+volume3 = pygame.image.load('gameAssets/volume3.png')
+volume4 = pygame.image.load('gameAssets/volume4.png')
 
 
 
 class Arrow(pygame.sprite.Sprite):
 	def __init__(self,arrowDir,startX,startY):
 		super().__init__()
+		self.bounceRange = 10
 		self.image = arrow
 		self.arrowDir = arrowDir
 		self.startX = startX
@@ -98,38 +103,38 @@ class Arrow(pygame.sprite.Sprite):
 		
 
 	def update(self,frame):
-		if frame % 3 in [0,1]: #slow animation speed down
+		if frame % 3 == 0: #slow animation speed down
 			if self.arrowDir == "left":
-				if self.rect.x <= self.startX+25 and not self.rewind:
+				if self.rect.x <= self.startX+self.bounceRange and not self.rewind:
 					self.rect.x+=1
-					if self.rect.x >= self.startX+25:
+					if self.rect.x >= self.startX+self.bounceRange:
 						self.rewind = True
 				if self.rect.x >= self.startX and self.rewind:
 					self.rect.x-=1
 					if self.rect.x <= self.startX:
 						self.rewind = False
 			elif self.arrowDir == "right":
-				if self.rect.x >= self.startX-25 and not self.rewind:
+				if self.rect.x >= self.startX-self.bounceRange and not self.rewind:
 					self.rect.x-=1
-					if self.rect.x <= self.startX-25:
+					if self.rect.x <= self.startX-self.bounceRange:
 						self.rewind = True
 				if self.rect.x <= self.startX and self.rewind:
 					self.rect.x+=1
 					if self.rect.x >= self.startX:
 						self.rewind = False
 			elif self.arrowDir == "down":
-				if self.rect.y >= self.startY-25 and not self.rewind:
+				if self.rect.y >= self.startY-self.bounceRange and not self.rewind:
 					self.rect.y-=1
-					if self.rect.y <= self.startY-25:
+					if self.rect.y <= self.startY-self.bounceRange:
 						self.rewind = True
 				if self.rect.y <= self.startY and self.rewind:
 					self.rect.y+=1
 					if self.rect.y >= self.startY:
 						self.rewind = False
 			elif self.arrowDir == "up":
-				if self.rect.y <= self.startY+25 and not self.rewind:
+				if self.rect.y <= self.startY+self.bounceRange and not self.rewind:
 					self.rect.y+=1
-					if self.rect.y >= self.startY+25:
+					if self.rect.y >= self.startY+self.bounceRange:
 						self.rewind = True
 				if self.rect.y >= self.startY and self.rewind:
 					self.rect.y-=1
@@ -170,7 +175,7 @@ class PlayerLevel10(pygame.sprite.Sprite):
 		self.startingY = self.rect.y
 		self.isGrounded = False
 
-	def update(self):
+	def update(self,frame):
 		if self.isJumping:
 			self.rect.y -= 12
 		if self.rect.y <= self.startingY - 120:
@@ -238,12 +243,14 @@ class topFloorBlockLevel10(pygame.sprite.Sprite):
 		self.image = pygame.Surface((32,32))
 		self.image.fill((0,0,0))
 		self.rect = self.image.get_rect(topleft=(x,y))
+		self.stopScrolling = False
 	def update(self, scrollSpeed):
 		if self.rect.y <= 200:
 			self.rect.y += scrollSpeed
 		else:
-			global level10StopScrolling
-			level10StopScrolling = True
+			self.stopScrolling = True
+	def getStopScrolling(self):
+		return self.stopScrolling
 
 class Level10Background(pygame.sprite.Sprite):
 	def __init__(self,x,y):
@@ -587,7 +594,7 @@ class Level6Player(pygame.sprite.Sprite):
 		self.rect = self.image.get_rect(topleft=(x,y))
 		self.direction = 0   #  different than playerDirection variable and param
 
-	def update(self, playerDirection):
+	def update(self, playerDirection,frame):
 		if playerDirection == 1:
 			if frame <= 30:
 				self.image = minerSwimming1
@@ -670,7 +677,7 @@ class Level8Player(pygame.sprite.Sprite):
 		self.attackingCooldown = 0
 		
 
-	def update(self):
+	def update(self,frame):
 		if self.direction == 1:
 			if frame <= 30:
 				if self.attacking:

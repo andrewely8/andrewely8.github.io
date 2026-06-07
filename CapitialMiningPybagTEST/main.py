@@ -12,6 +12,9 @@ import asyncio
 
 #initialize Pygame 
 pygame.init()
+pygame.mixer.init()
+gameMusic = pygame.mixer.music.load("gameAssets/audio/backgroundMusic.mp3")
+clickButtonSound = pygame.mixer.Sound("gameAssets/audio/clickButton.mp3")
 pygame.display.set_caption('capitalist')
 clock = pygame.time.Clock()
 
@@ -20,7 +23,7 @@ WHITE = (255,255,255)
 BLACK = (0,0,0)
 GREEN = (95, 180, 90)   
 RED = pygame.Color('red')
-GRAY = pygame.Color('grey')
+GRAY = pygame.Color(230, 230, 230)
 DARKYELLOW = pygame.Color(129,106,8)
 YELLOW = pygame.Color(156,139,13)
 DISPLAYSURF = pygame.display.set_mode((720, 900))
@@ -29,9 +32,10 @@ DISPLAYSURF = pygame.display.set_mode((720, 900))
 font1 = pygame.font.SysFont('monaco', 24)
 font2 = pygame.font.SysFont('monaco', 18)
 font3 = pygame.font.Font('gameAssets/fonts/BoldPixels.ttf', 24)
+font4 = pygame.font.Font('gameAssets/fonts/BoldPixels.ttf', 18)
 
 #set windows icon (top left of window)
-pygame.display.set_icon(logo)
+pygame.display.set_icon(logo) 
 
 #game variables
 running = True
@@ -40,17 +44,18 @@ displayMine = False
 displayMainMenu = True
 initializeLevel = True
 frame = 0
-profit = 4
-menuRect = pygame.Rect(680, 860, 30, 30)
+profit = 400000000000
+menuRect = pygame.Rect(660, 840, 48, 48)
 itemsIndex = 1
 upgradesIndex = 1
-buyModeQuantityList = ['x1','x25', 'x100', 'MAX']
+buyModeQuantityList = ['1','25', '100', 'MAX']
 buyModeQuantityIndex = 0
 dragging = False
 offset_x = 0
 menuButtonOpacity = 0
 buyModeButtonOpacity = 0 
 upgradeWindow = pygame.Rect(100, 800, 500, 45)
+sfxOn = True
 
 #list of upgrade item lists 
 upgradesItems = [upgradeItemsFull[0]] #Start off with first Item
@@ -60,7 +65,7 @@ storeItems = [storeItemsFull[0]] #start off with first item
 
 gameLaunchMessage = [
     "Welcome to Capitalist Mining!",
-    "The goal of the game is to beat all 10 levels in the Mine.",
+    "The goal of the game is to beat all levels in the Mine.",
     "You will need to earn enough money to unlock the levels,",
     "by developing businesses in the Store.",
     "Vist the Store to begin earning money!"
@@ -68,36 +73,54 @@ gameLaunchMessage = [
 
 
 hints = [
-            [["Welcome to the Store!","Here you will buy businesses to gain money,", "purchase your first business!"],20,225,675,100],
-            [["Now that you have a garden shovel,", "start using it!"],20,225,675,100],
-            [["Managers run your businesses for you,","so you don't have to.","Buy your first manager!"],20,600,675,100],
-            [["Buy mode allows you to buy", "multiple of one business in one click!"],240,3,410,60],
-            [["The speed of a business increases the more you buy!"],20,455,675,100],
-            [["Don't forget to check on your Mines!"],265,845,390,50],
-            [["Upgrades increase a businesses profit!"],110,771,470,33],
+            [["Welcome to the Store!","Here you will buy businesses to gain money,", "purchase your first business!"],100,325,500,90],
+            [["Once you have a garden shovel,", "start using it!"],120,325,480,60],
+            [["Managers run your businesses for you,","so you don't have to.","Buy your first manager!"],120,600,480,90],
+            [["Buy mode lets you buy many", "of one business in one click!"],260,3,360,60],
+            [["The speed of a business increases the more you buy!","every 25 of each business you own", "will increase that businesses speed."],70,555,580,80],
+            [["Don't forget to check on your Mines!"],255,855,400,30],
+            [["Upgrades increase a businesses profit!"],100,855,415,30],
         ]
 hintCheckPoints = [0,0,1000,2000,3000,4000,250000]
 hintArrows = [
-    Arrow("down",25,10),
+    Arrow("down",26,24),
     Arrow("left",500,100),
-    Arrow("down",65,625),
-    Arrow("up",670,55),
+    Arrow("right",15,735),
+    Arrow("up",656,65),
     None,
-    Arrow("down",680,760),
-    Arrow("right",20,810)]
+    Arrow("down",670,780),
+    Arrow("right",30,805)]
 hintProgress = 0
 hintButtonActive = True
 hintButton = pygame.Rect(hints[0][1], hints[0][2], hints[0][3], hints[0][4])
 hintButtonSurface = pygame.Surface((hints[0][3], hints[0][4]))
 hintButtonOpacity = 0
 
+managerInfo = [
+    ["Gardener Bill", "manages garden shovel", "loves to garden!"],
+    ["Worker", "manages spade", "Hard working!"],
+    ["Miner", "manages pickaxe", "yearns for the mines!"],
+    ["Drill Specialist", "manages drill", "Precise Drilling!"],
+    ["Superviser Frank", "manages workers", "Expert Delegation!"],
+    ["Safety Inspector", "manages hardhats", "Saftey First!"],
+    ["Industrial Engineer", "manages dumptruck", "Quick Repairs!"],
+    ["Rare Mineral Expert", "manages mineshaft", "Know the value!"],
+    ["Mike", "manages quarry", "Advanced Strategy!"],
+    ["Gary Laser Eyes", "manages laser beam", "Superb Technology!"],
+]
 
 storeButtonOpacity = 0
 mineButtonOpacity = 0
 launchButtonOpacity = 0
+changeVolumeButtonOpacity = 0
 firstGameLaunch = True
 mineLocked = True
-firstLaunchArrow = Arrow("left",525,525)
+gameVolumeIndex = 0
+gameVolumeImages = [volume1,volume2,volume3,volume4]
+gameVolume = [0.4,0.2,0.1,0.0]
+pygame.mixer.music.set_volume(gameVolume[gameVolumeIndex])
+pygame.mixer.music.play()
+firstLaunchArrow = Arrow("left",505,554)
 
 #function to display the entire start screen
 def startScreen():
@@ -109,18 +132,25 @@ def startScreen():
     global storeButtonOpacity
     global mineButtonOpacity
     global launchButtonOpacity
+    global changeVolumeButtonOpacity
     global profit
     global firstGameLaunch
     global firstLaunchArrow 
+    global sfxOn
+    global gameVolumeIndex
+    global gameVolumeImages
 
     #Start screen drawing
     storeButton = pygame.Rect(205, 495, 300, 150)
     mineButton = pygame.Rect(205, 315, 300, 150) 
     launchButton = pygame.Rect(50,675,620,150)
+    changeVolumeButton = pygame.Rect(600,50,64,64)
 
     storeButtonSurface = pygame.Surface((300,150))  
     mineButtonSurface = pygame.Surface((300,150))  
     launchButtonSurface = pygame.Surface((620,150))
+    changeVolumeSurface = pygame.Surface((64,64))
+    
     
     #start screen loop 
     mouse_pressed = pygame.mouse.get_pressed()
@@ -131,9 +161,25 @@ def startScreen():
             pygame.quit()
             sys.exit()
 
+        if changeVolumeButton.collidepoint(mouse_pos):
+            changeVolumeButtonOpacity = 75
+            if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                gameVolumeIndex +=1
+                if gameVolumeIndex > len(gameVolumeImages)-1:
+                    gameVolumeIndex = 0
+                pygame.mixer.music.set_volume(gameVolume[gameVolumeIndex])
+                if gameVolumeIndex == 3:
+                    sfxOn = False
+                elif gameVolumeIndex != 3:
+                    sfxOn = True
+        elif not changeVolumeButton.collidepoint(mouse_pos):
+            changeVolumeButtonOpacity = 0
+
         if storeButton.collidepoint(mouse_pos):
             storeButtonOpacity = 75
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                if sfxOn:
+                    clickButtonSound.play()
                 displayMainMenu = False
                 displayStore = True
                 firstGameLaunch = False
@@ -143,6 +189,8 @@ def startScreen():
         if mineButton.collidepoint(mouse_pos) and not mineLocked:
             mineButtonOpacity = 75
             if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+                if sfxOn:
+                    clickButtonSound.play()
                 displayMainMenu = False
                 displayMine = True
         elif not mineButton.collidepoint(mouse_pos):
@@ -159,16 +207,20 @@ def startScreen():
     DISPLAYSURF.blit(background, (0,0))
     DISPLAYSURF.blit(logo, (275, 100))
     DISPLAYSURF.blit(menu, (125, 225))
+    pygame.draw.rect(DISPLAYSURF,GRAY,(600,50,64,64),border_radius=3)
+    pygame.draw.rect(DISPLAYSURF,BLACK,(600,50,64,64),width=3,border_radius=3)
+    DISPLAYSURF.blit(gameVolumeImages[gameVolumeIndex],(600,50))
 
-    if profit >= 1000:
+    if profit >= 2500:
         mineLocked = False
     if mineLocked:
         DISPLAYSURF.blit(chains, (125, 225))
 
     if firstGameLaunch:
         launchButtonSurface.set_alpha(launchButtonOpacity)     
-        launchButtonSurface.fill((255,255,255))
-        pygame.draw.rect(DISPLAYSURF, BLACK, launchButton, 2)
+        launchButtonSurface.fill((0,0,0))
+        pygame.draw.rect(DISPLAYSURF, GRAY, launchButton,border_radius=3)
+        pygame.draw.rect(DISPLAYSURF, BLACK, launchButton,width=2,border_radius=3)
         DISPLAYSURF.blit(launchButtonSurface, (50,675))
 
         lineSpace = 10
@@ -191,6 +243,10 @@ def startScreen():
     mineButtonSurface.set_alpha(mineButtonOpacity)     
     mineButtonSurface.fill((255,255,255))     
     DISPLAYSURF.blit(mineButtonSurface, (205,315)) 
+
+    changeVolumeSurface.set_alpha(changeVolumeButtonOpacity)
+    changeVolumeSurface.fill((0,0,0))
+    DISPLAYSURF.blit(changeVolumeSurface,(600,50))
 
     pygame.display.flip()
 
@@ -248,37 +304,13 @@ def storeButtons(item, row):
     storeButtonSurface = pygame.Surface((40,40))  
     storeButtonOpacity = 0
 
-    #draw manager button
-    managerButton = pygame.Rect((row+20)-50, 725, 45, 45)
-    managerButtonImage = managerBoard.subsurface((0,0+(itemNumber*58),45,45))
-    DISPLAYSURF.blit(managerButtonImage, (row-30,725))
-    if managerStatus:
-        checkMarkImage = checkBox.subsurface((0,0,35,35))
-        DISPLAYSURF.blit(checkMarkImage, (row-30,725))
-        
-
-    #draw manager button opacity
-    managerButtonSurface = pygame.Surface((45,45))  
-    managerButtonOpacity = 0
-
     mouse_pos = pygame.mouse.get_pos()
     if (storeButton.collidepoint(mouse_pos)):
         storeButtonOpacity = 75
 
-    if (managerButton.collidepoint(mouse_pos)):
-        managerButtonOpacity = 75
-        if managerCost >= 100000:
-            drawNumber(managerCost, (row+20)-50, 705, font1, "left")
-        else:   
-            drawNumber(managerCost, (row+20)-50, 705, font1, "left")
-
     storeButtonSurface.set_alpha(storeButtonOpacity)     
-    storeButtonSurface.fill((255,255,255))     
-    DISPLAYSURF.blit(storeButtonSurface, (24,row+3))
-
-    managerButtonSurface.set_alpha(managerButtonOpacity)
-    managerButtonSurface.fill((255,255,255))
-    DISPLAYSURF.blit(managerButtonSurface, ( (row+20)-50 , 725))
+    storeButtonSurface.fill((0,0,0))     
+    DISPLAYSURF.blit(storeButtonSurface, (23,row+3))
 
     #draw gain bar
     if speed < 15:
@@ -297,19 +329,24 @@ def storeButtons(item, row):
         quantity = 1
     if buyModeQuantityIndex == 1:
         quantity = 25
-        surface = font1.render('{0}'.format(quantity), True, RED)
+        surface = font4.render('{0}'.format(quantity), True, GRAY)
+        pygame.draw.rect(DISPLAYSURF, BLACK, (37,row+25,35,20), width=2,border_radius=2)
+        pygame.draw.rect(DISPLAYSURF, BLACK, (37,row+25,35,20), border_radius=2)
         rect = (40,row+25,25,25)
         DISPLAYSURF.blit(surface, rect)
     if buyModeQuantityIndex == 2:
         quantity = 100
-        surface = font1.render('{0}'.format(quantity), True, RED)
+        surface = font4.render('{0}'.format(quantity), True, GRAY)
+        pygame.draw.rect(DISPLAYSURF, BLACK, (37,row+25,35,20), width=2,border_radius=2)
+        pygame.draw.rect(DISPLAYSURF, BLACK, (37,row+25,35,20), border_radius=2)
         rect = (40,row+25,25,25)
         DISPLAYSURF.blit(surface, rect)
     if buyModeQuantityIndex == 3:
-
         logFunction = ( (profit*(costMultilplier-1))/(initialCosts[itemNumber]*(costMultilplier ** amount)) ) + 1
         quantity = math.floor(math.log(logFunction ,costMultilplier))
-        surface = font1.render('{0}'.format(quantity), True, RED)
+        surface = font4.render('{0}'.format(quantity), True, GRAY)
+        pygame.draw.rect(DISPLAYSURF, BLACK, (37,row+25,35,20), width=2,border_radius=2)
+        pygame.draw.rect(DISPLAYSURF, BLACK, (37,row+25,35,20), border_radius=2)
         rect = (40,row+25,25,25)
         DISPLAYSURF.blit(surface, rect)
 
@@ -321,7 +358,27 @@ def storeButtons(item, row):
     drawNumber(gain, 510, row+10, font1, "left") 
 
     drawTitle(name, 75, row+30, font1)
+
+
+    #draw manager button
+    managerButton = pygame.Rect((row+20)-50, 725, 45, 45)
+    managerButtonImage = managerBoard.subsurface((0,0+(itemNumber*58),45,45))
+    DISPLAYSURF.blit(managerButtonImage, (row-30,725))
+    if managerStatus:
+        checkMarkImage = checkBox.subsurface((0,0,35,35))
+        DISPLAYSURF.blit(checkMarkImage, (row-30,725))
+        
+    #draw manager button opacity
+    managerButtonSurface = pygame.Surface((45,45))  
+    managerButtonOpacity = 0
+    if (managerButton.collidepoint(mouse_pos)):
+        managerButtonOpacity = 75
     
+
+    managerButtonSurface.set_alpha(managerButtonOpacity)
+    managerButtonSurface.fill((0,0,0))
+    DISPLAYSURF.blit(managerButtonSurface, ((row+20)-50 , 725))
+
     #return the new values for current item 
     return [storeButton, gainButton, amount, itemNumber, cost, gain, length, active, 
     managerStatus, managerButton, managerCost, costMultilplier, gainMultiplier]
@@ -348,11 +405,13 @@ def upgradeButtons(item):
     mouse_pos = pygame.mouse.get_pos()
     if (upgradeButton.collidepoint(mouse_pos) and upgradeWindow.collidepoint(mouse_pos)):
         upgradeButtonOpacity = 75
-        drawNumber(cost, position, 793, font2, "left")
-        drawTitle(name, position, 780, font1)
+        pygame.draw.rect(DISPLAYSURF, GRAY,(position-73,772,195,31),border_radius=3)
+        pygame.draw.rect(DISPLAYSURF, BLACK,(position-73,772,195,31),width=2,border_radius=3)
+        drawNumber(cost, position-70, 793, font4, "left")
+        drawTitle(name, position-70, 780, font4)
 
     upgradeButtonSurface.set_alpha(upgradeButtonOpacity)     
-    upgradeButtonSurface.fill((255,255,255))     
+    upgradeButtonSurface.fill((0,0,0))     
     DISPLAYSURF.blit(upgradeButtonSurface, (position,805))
 
 
@@ -366,8 +425,8 @@ def upgradeButtons(item):
 def storeScreen():
 
     #draw background
-    DISPLAYSURF.blit(background, (0,0)) 
-    DISPLAYSURF.blit(mainMenu, (680, 860))
+    DISPLAYSURF.blit(background, (0,0))
+    #DISPLAYSURF.blit(mainMenu, (680, 860))
     
     #variables
     global hintButton
@@ -391,6 +450,7 @@ def storeScreen():
     global upgradeWindow
     global displayStore
     global displayMainMenu
+    global sfxOn
     
 
     storeItemsFullLen = len(storeItemsFull) - 1
@@ -399,23 +459,35 @@ def storeScreen():
     upgradeItemsFullLen = len(upgradeItemsFull) - 1
     
     #Draw the title texts
-    drawTitle('Revenue:', 10, 20, font1)
+    drawTitle('Revenue: $', 10, 20, font3)
     drawNumber(profit, 120, 20, font1, "left")
 
-    drawTitle('cost', 75, 80, font1)
-    drawTitle('quantity', 285, 80, font1)
-    drawTitle('profit', 510, 80, font1)
+    drawTitle('cost', 75, 80, font3)
+    drawTitle('number owned', 245, 80, font3)
+    drawTitle('profit', 510, 80, font3)
 
 
     #buy mode button
-    buyModeButton = pygame.Rect(665, 12, 40, 40)
-    pygame.draw.rect(DISPLAYSURF, BLACK, buyModeButton, 2)
-    drawTitle(buyModeQuantityList[buyModeQuantityIndex], 670, 30, font2)
+    buyModeButton = pygame.Rect(640, 32, 64, 40)
+    pygame.draw.rect(DISPLAYSURF, GRAY, buyModeButton, border_radius=2)
+    pygame.draw.rect(DISPLAYSURF, BLACK, buyModeButton, width=2,border_radius=2)
+    pygame.draw.rect(DISPLAYSURF, GRAY, (635,5,74,28))
+    pygame.draw.rect(DISPLAYSURF, BLACK, (635,5,74,28),width=2) 
+    drawTitle("BUY IN", 640, 13, font4)
+    drawTitle("LOTS OF", 640, 25, font4)
+
+    buyModeTitleSurface1 = font4.render(buyModeQuantityList[buyModeQuantityIndex], True, BLACK)
+    titleRect = buyModeTitleSurface1.get_rect()
+    titleRect.center = buyModeButton.center
+    DISPLAYSURF.blit(buyModeTitleSurface1, titleRect)
+
+   
 
 
     #Draw hint button
     if hintButtonActive:
-        pygame.draw.rect(DISPLAYSURF, BLACK, hintButton, 2)
+        pygame.draw.rect(DISPLAYSURF, GRAY, hintButton, border_radius=3)
+        pygame.draw.rect(DISPLAYSURF, BLACK, hintButton, width=2,border_radius=3)
         lineSpace = 5
         lineSpaceInc = 25
         for line in hints[hintProgress][0]:
@@ -426,7 +498,7 @@ def storeScreen():
             lineSpace+=lineSpaceInc 
 
         hintButtonSurface.set_alpha(hintButtonOpacity)     
-        hintButtonSurface.fill((255,255,255))     
+        hintButtonSurface.fill((0,0,0))     
         DISPLAYSURF.blit(hintButtonSurface, (hints[hintProgress][1], hints[hintProgress][2]))
 
     #checks if there are remaining store items
@@ -464,8 +536,8 @@ def storeScreen():
     mouse_pressed = pygame.mouse.get_pressed()
     mouse_pos = pygame.mouse.get_pos()
 
-    menuButtonSurface = pygame.Surface((30,30)) 
-    buyModeButtonSurface = pygame.Surface((40,40))
+    menuButtonSurface = pygame.Surface((48,48)) 
+    buyModeButtonSurface = pygame.Surface((64,40))
 
     #Hint progress
     #This is outside of the event loop so that this behavior still functions when no user inputs.
@@ -488,11 +560,13 @@ def storeScreen():
             hintProgress+=1
             hintButtonActive = False
     if hintProgress == 4:
-       if len(storeItems) >= 6:
+       if len(storeItems) >= 7:
         hintProgress+=1
         hintButtonActive = False
-        
-
+    if hintProgress == 6:
+        if upgradesItems[0][7] == True:
+            hintProgress +=1
+            hintButtonActive=False
 
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
@@ -534,7 +608,6 @@ def storeScreen():
 
         #Checks each upgrade items events
         for u in upgradeValues:
-
             #upgrade window scroll logic 
             if upgradeWindow.collidepoint(mouse_pos):
                 if event.type == pygame.MOUSEWHEEL:
@@ -546,7 +619,8 @@ def storeScreen():
             #upgrade purchase logic
             if (profit >= upgradesItems[u[3]][1] and u[0].collidepoint(mouse_pos) 
                 and event.type == pygame.MOUSEBUTTONUP and event.button == 1 and upgradesItems[u[3]][7] == False and upgradeWindow.collidepoint(mouse_pos)):
-
+                if sfxOn:
+                    clickButtonSound.play()
                 upgradesItems[u[3]][7] = True
                 profit -= upgradesItems[u[3]][1]
                 storeItems[u[5]][2] *= upgradesItems[u[3]][5]
@@ -558,9 +632,9 @@ def storeScreen():
             #Buy Item Button
             if (profit >= storeItems[b[3]][1] and b[0].collidepoint(mouse_pos) 
               and event.type == pygame.MOUSEBUTTONUP and event.button == 1):
-
-
                 if buyModeQuantityIndex == 0:
+                    if sfxOn:
+                        clickButtonSound.play()
                     profit -= storeItems[b[3]][1]
 
                     storeItems[b[3]][3] += 1
@@ -570,6 +644,8 @@ def storeScreen():
                 elif (buyModeQuantityIndex == 1 and (profit >= initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** (storeItems[b[3]][3] + 25)) / (1 - storeItems[b[3]][10]) - initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** storeItems[b[3]][3])/(1 - storeItems[b[3]][10]) )):
                     profit -= initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** (storeItems[b[3]][3] + 25)) / (1 - storeItems[b[3]][10]) - initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** storeItems[b[3]][3])/(1 - storeItems[b[3]][10])
 
+                    if sfxOn:
+                        clickButtonSound.play()
                     storeItems[b[3]][3] += 25
                     storeItems[b[3]][1] = initialCosts[b[3]] * storeItems[b[3]][10] ** (storeItems[b[3]][3])
                     storeItems[b[3]][2] = 1 * storeItems[b[3]][11] * (storeItems[b[3]][3])
@@ -577,12 +653,16 @@ def storeScreen():
                 elif (buyModeQuantityIndex == 2 and (profit >= initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** (storeItems[b[3]][3] + 100)) / (1 - storeItems[b[3]][10]) - initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** storeItems[b[3]][3])/(1 - storeItems[b[3]][10]) )):
                     profit -= initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** (storeItems[b[3]][3] + 100)) / (1 - storeItems[b[3]][10]) - initialCosts[b[3]] * (1 - storeItems[b[3]][10] ** storeItems[b[3]][3])/(1 - storeItems[b[3]][10])
 
+                    if sfxOn:
+                        clickButtonSound.play()
                     storeItems[b[3]][3] += 100
                     storeItems[b[3]][1] = initialCosts[b[3]] * storeItems[b[3]][10] ** (storeItems[b[3]][3])
                     storeItems[b[3]][2] = 1 * storeItems[b[3]][11] * (storeItems[b[3]][3])
 
                 elif (buyModeQuantityIndex == 3 and (profit >= storeItems[b[3]][1])):
 
+                    if sfxOn:
+                        clickButtonSound.play()
                     priceGrowth = storeItems[b[3]][10]
                     currentOwned = storeItems[b[3]][3]
                     logFunction = ( (profit*(priceGrowth-1))/(initialCosts[b[3]]*(priceGrowth ** currentOwned)) ) + 1
@@ -604,12 +684,14 @@ def storeScreen():
             if (profit >= storeItems[b[3]][9] and b[9].collidepoint(mouse_pos) 
               and event.type == pygame.MOUSEBUTTONUP and storeItems[b[3]][8] != True 
               and storeItems[b[3]][3] >= 1 and event.button == 1):
-
+                if sfxOn:
+                    clickButtonSound.play()
                 storeItems[b[3]][8] = True
                 profit -= storeItems[b[3]][9]
 
-    for v in values:
 
+    row = 95
+    for v in values:
         #mile Stone logic 
         i = 0
         for s in mileStones:
@@ -626,22 +708,45 @@ def storeScreen():
             storeItems[v[3]][7] = False
             profit += storeItems[v[3]][2]
 
+        #draw manager button toolTip on hover
+        if (v[9].collidepoint(mouse_pos)):
+            pygame.draw.rect(DISPLAYSURF, GRAY, (row-94,645,180,75),border_radius=3)
+            pygame.draw.rect(DISPLAYSURF, BLACK, (row-94,645,180,75),width=2,border_radius=3)
+            lineSpace = 2
+            lineSpaceInc = 16
+            for line in managerInfo[v[3]]:
+                textSurface = font4.render(line,True,BLACK)
+                textRect = textSurface.get_rect()
+                DISPLAYSURF.blit(textSurface,(row-90,645+lineSpace))
+                lineSpace+=lineSpaceInc
+            drawNumber(v[10], row-90, 645+lineSpace+15, font1, "left")
+        row+=60
+
+
     #update Screen
-    menuButtonSurface.set_alpha(menuButtonOpacity)     
-    menuButtonSurface.fill((255,255,255))     
-    DISPLAYSURF.blit(menuButtonSurface, (680,860))
-
-
+    
     buyModeButtonSurface.set_alpha(buyModeButtonOpacity)     
-    buyModeButtonSurface.fill((255,255,255))     
-    DISPLAYSURF.blit(buyModeButtonSurface, (665, 12))
+    buyModeButtonSurface.fill((0,0,0))     
+    DISPLAYSURF.blit(buyModeButtonSurface, (640, 32))
 
 
     #Covers up the upgrade items when scrolling.
-    upgradeWindowCoverRight = background.subsurface((600,800,125,45))
-    upgradeWindowCoverLeft = background.subsurface((0,800,100,45))
-    DISPLAYSURF.blit(upgradeWindowCoverRight, (600,800))
-    DISPLAYSURF.blit(upgradeWindowCoverLeft, (0,800))
+    upgradeWindowCoverRight = background.subsurface((600,805,125,50))
+    upgradeWindowCoverLeft = background.subsurface((0,805,100,50))
+    DISPLAYSURF.blit(upgradeWindowCoverRight, (600,805))
+    DISPLAYSURF.blit(upgradeWindowCoverLeft, (0,805))
+    
+    pygame.draw.rect(DISPLAYSURF,GRAY,menuRect,border_radius=2)
+    pygame.draw.rect(DISPLAYSURF,BLACK,menuRect,width=2,border_radius=2)
+    drawTitle('MAIN', 664,855,font4)
+    drawTitle('MENU', 664,870,font4)
+    menuButtonSurface.set_alpha(menuButtonOpacity)     
+    menuButtonSurface.fill((0,0,0))     
+    DISPLAYSURF.blit(menuButtonSurface, (660,840))
+
+    #Show scroll instructions
+    if len(upgradesItems) >= 11:
+        drawTitle('<- SCROLL MOUSE ->', 265, 860, font4)
 
     if hintProgress < len(hints):
         if hintButtonActive:
@@ -656,16 +761,16 @@ def storeScreen():
 
 levelSelect = [
 
-    {"levelNumber": 0 , "rectangle" : pygame.Rect(40,50,310,100), "completed": False, "purchased": False, "cost": 2500},
-    {"levelNumber": 1 , "rectangle" : pygame.Rect(40,200,310,100), "completed": False, "purchased": False, "cost": 10000},
-    {"levelNumber": 2 , "rectangle" : pygame.Rect(40,350,310,100), "completed": False, "purchased": False, "cost": 100000},
-    {"levelNumber": 3 , "rectangle" : pygame.Rect(40,500,310,100), "completed": False, "purchased": False, "cost": 500000},
-    {"levelNumber": 4 , "rectangle" : pygame.Rect(40,650,310,100), "completed": False, "purchased": False, "cost": 1000000},
-    {"levelNumber": 5 , "rectangle" : pygame.Rect(370,50,310,100), "completed": False, "purchased": False, "cost": 10000000},
-    {"levelNumber": 6 , "rectangle" : pygame.Rect(370,200,310,100), "completed": False, "purchased": False, "cost": 100000000},
+    {"levelNumber": 0 , "rectangle" : pygame.Rect(40,50,310,100), "completed": False, "purchased": False, "cost":   2500},
+    {"levelNumber": 1 , "rectangle" : pygame.Rect(40,200,310,100), "completed": False, "purchased": False, "cost":  25000},
+    {"levelNumber": 2 , "rectangle" : pygame.Rect(40,350,310,100), "completed": False, "purchased": False, "cost":  500000},
+    {"levelNumber": 3 , "rectangle" : pygame.Rect(40,500,310,100), "completed": False, "purchased": False, "cost":  1000000},
+    {"levelNumber": 4 , "rectangle" : pygame.Rect(40,650,310,100), "completed": False, "purchased": False, "cost":  10000000},
+    {"levelNumber": 5 , "rectangle" : pygame.Rect(370,50,310,100), "completed": False, "purchased": False, "cost":  100000000},
+    {"levelNumber": 6 , "rectangle" : pygame.Rect(370,200,310,100), "completed": False, "purchased": False, "cost": 500000000},
     {"levelNumber": 7 , "rectangle" : pygame.Rect(370,350,310,100), "completed": False, "purchased": False, "cost": 1000000000},
-    {"levelNumber": 8 , "rectangle" : pygame.Rect(370,500,310,100), "completed": False, "purchased": False, "cost": 5000000000},
-    {"levelNumber": 9 , "rectangle" : pygame.Rect(370,650,310,100), "completed": False, "purchased": False, "cost": 10000000000}
+    {"levelNumber": 8 , "rectangle" : pygame.Rect(370,500,310,100), "completed": False, "purchased": False, "cost": 33333333333},
+    {"levelNumber": 9 , "rectangle" : pygame.Rect(370,650,310,100), "completed": False, "purchased": False, "cost": 100000000000}
 
 ]
 levelButtonOpacity = 0
@@ -770,7 +875,18 @@ async def main():
     global frame
     global level1StopScrolling
     global level10StopScrolling 
+    global sfxOn
+    global musicVolume
+    global gameVolumeIndex
+    global gameVolume
+
     while running:
+
+        if not pygame.mixer.music.get_busy():
+            pygame.mixer.music.rewind()
+            pygame.mixer.music.play()
+            pygame.mixer.music.set_volume(gameVolume[gameVolumeIndex])
+
         await asyncio.sleep(0)
         
         clock.tick(60)
@@ -1552,7 +1668,7 @@ async def main():
                     if pygame.sprite.spritecollide(enemey, all_floors, False):
                         enemey.collidedWall = True
 
-                player.update(playerDirection)
+                player.update(playerDirection,frame)
                 all_enemey1.update(playerSpeed, direction)
                 
                 DISPLAYSURF.blit(level6Background , (0,0))
@@ -1690,7 +1806,7 @@ async def main():
                         initializeLevel = True
                         displayMine = True
 
-                player.update()
+                player.update(frame)
                 all_enemy.update(player.rect.x)
 
                 
@@ -1803,18 +1919,22 @@ async def main():
                     displayMine = True
 
 
-                player.update()
+                player.update(frame)
                 finish.update(scrollSpeed)
                 bottom_floors.update(scrollSpeed)
                 lava.update(scrollSpeed)
 
-                if level10StopScrolling == False:
+
+                for bf in bottom_floors:
+                    checkStopScrolling = bf.getStopScrolling()
+                    break #Only care about the first (one of) the blocks, using for loop because spriteGroup not iterable
+
+                if checkStopScrolling == False:
                     all_backgrounds.update(scrollSpeed)
                     all_floors.update(scrollSpeed)
                 else:
                     lava.topOut = True
                 
-
 
                 all_backgrounds.draw(DISPLAYSURF)
                 pygame.draw.rect(DISPLAYSURF, BLACK, (0,0,8,900))
