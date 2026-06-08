@@ -11,9 +11,9 @@ from sprites import *
 import asyncio
 
 #initialize Pygame 
-pygame.mixer.pre_init(buffer=4096)
 pygame.init()
 pygame.mixer.init()
+levelPlayMusic = pygame.mixer.music.load("gameAssets/audio/levelPlay.ogg")
 gameMusic = pygame.mixer.music.load("gameAssets/audio/backgroundMusic.ogg")
 clickButtonSound = pygame.mixer.Sound("gameAssets/audio/clickButton.ogg")
 pygame.display.set_caption('capitalist')
@@ -238,12 +238,12 @@ def startScreen():
         DISPLAYSURF.blit(firstLaunchArrow.image,(firstLaunchArrow.rect.x,firstLaunchArrow.rect.y))
 
     storeButtonSurface.set_alpha(storeButtonOpacity)     
-    storeButtonSurface.fill((255,255,255))     
+    storeButtonSurface.fill((0,0,0))     
     DISPLAYSURF.blit(storeButtonSurface, (205,495))
 
     mineButtonSurface.set_alpha(mineButtonOpacity)     
-    mineButtonSurface.fill((255,255,255))     
-    DISPLAYSURF.blit(mineButtonSurface, (205,315)) 
+    mineButtonSurface.fill((0,0,0))     
+    DISPLAYSURF.blit(mineButtonSurface, (205,318)) 
 
     changeVolumeSurface.set_alpha(changeVolumeButtonOpacity)
     changeVolumeSurface.fill((0,0,0))
@@ -251,6 +251,18 @@ def startScreen():
 
     pygame.display.flip()
 
+
+
+
+def changeMusic(newMusicPath):
+    global gameVolumeIndex
+    global gameVolume
+
+    pygame.mixer.music.stop()
+    pygame.mixer.music.unload()
+    pygame.mixer.music.load(newMusicPath)
+    pygame.mixer.music.play()
+    pygame.mixer.music.set_volume(gameVolume[gameVolumeIndex])
 
 
 #Function to draw Titles to store Screen
@@ -789,9 +801,61 @@ def mineScreen():
     global levelButtonOpacity
     global levelActive
     global currentLevel
+    global gameVolumeIndex
+    global gameVolume
+    global sfxOn
+
+
+    levelInstructions = [
+        ["USE A,D to move left and right,",
+         "make it to the end of the level",
+         "quickly before the roof collapses!"
+        ],
+        ["USE W,A,S,D to move,",
+         "navigate through the maze",
+         "to find the exit."
+        ],
+        ["USE A,D to move left and right,",
+         "USE SPACE to activate lever,",
+         "direct the flow of water."
+        ],
+        ["USE A,D to move left and right,",
+         "SPACE to jump, avoid enemies",
+         "and make it to the end."
+        ],
+        ["USE SPACE to jump,",
+         "avoid Dynamite",
+         "to beat the level!"
+        ],
+        ["USE A,D to move left and right,",
+         "SPACE to jump, avoid enemies",
+         "and make it to the end."
+        ],
+        ["USE W,A,S,D to move,",
+         "make it to the end of the level",
+         "before you run out of breath!"
+        ],
+        ["USE SPACE to jump,",
+         "avoid Dynamite",
+         "to beat the level!"
+        ],
+        ["USE A,D to move left and right,",
+         "USE SPACE to attack,",
+         "defeat all the enemies!"
+        ],
+        ["USE A,D to move left and right,",
+         "USE SPACE to jump, make it the top",
+         "quickly before the lava rises!"
+        ]
+    ]
 
     DISPLAYSURF.blit(background, (0,0))
-    DISPLAYSURF.blit(mainMenu, (680, 860))
+
+    pygame.draw.rect(DISPLAYSURF,GRAY,menuRect,border_radius=2)
+    pygame.draw.rect(DISPLAYSURF,BLACK,menuRect,width=2,border_radius=2)
+    drawTitle('MAIN', 664,855,font4)
+    drawTitle('MENU', 664,870,font4)
+
     drawTitle('Revenue:', 10, 20, font1)
     drawNumber(profit, 120, 20, font1, "left")
 
@@ -799,14 +863,6 @@ def mineScreen():
     mouse_pos = pygame.mouse.get_pos()
 
     for level in levelSelect:
-        pygame.draw.rect(DISPLAYSURF, BLACK, level['rectangle'], 5)
-        drawTitle('Level ' + str((level['levelNumber']+1)) , level['rectangle'][0]+10, level['rectangle'][1]+15, font1)
-        if not level['purchased']:
-            DISPLAYSURF.blit(unlockChain, (level['rectangle'][0], level['rectangle'][1]-10))
-            drawTitle('cost ' , level['rectangle'][0]+135, level['rectangle'][1]+75, font1)
-            drawNumber(level['cost'], level['rectangle'][0]+150, level['rectangle'][1]+90, font2, "center")
-        if level['completed']:
-            DISPLAYSURF.blit(checkBox, (level['rectangle'][0]+60, level['rectangle'][1]-10))
 
         if level['rectangle'].collidepoint(mouse_pos):
             levelButtonOpacity = 75
@@ -814,12 +870,29 @@ def mineScreen():
             levelButtonOpacity = 0
         levelButtonSurface = pygame.Surface((level['rectangle'][2],level['rectangle'][3]))
         levelButtonSurface.set_alpha(levelButtonOpacity)     
-        levelButtonSurface.fill((255,255,255))     
+        levelButtonSurface.fill((0,0,0))     
         DISPLAYSURF.blit(levelButtonSurface, (level['rectangle'][0],level['rectangle'][1]))
 
-    
+        pygame.draw.rect(DISPLAYSURF, BLACK, level['rectangle'], 5)
+        drawTitle('Level ' + str((level['levelNumber']+1)) , level['rectangle'][0]+10, level['rectangle'][1]+15, font1)
+        if not level['purchased']:
+            DISPLAYSURF.blit(unlockChain, (level['rectangle'][0], level['rectangle'][1]-10))
+            drawTitle('cost ' , level['rectangle'][0]+135, level['rectangle'][1]+75, font1)
+            drawNumber(level['cost'], level['rectangle'][0]+150, level['rectangle'][1]+90, font2, "center")
+        if level['purchased']:
+            instructText = levelInstructions[level['levelNumber']]
+            lineSpace = 25
+            lineSpaceInc = 15
+            for line in instructText:
+                textSurface = font4.render(line,True,BLACK)
+                textRect = textSurface.get_rect()
+                textRect.center = level['rectangle'].center
+                DISPLAYSURF.blit(textSurface,(textRect[0],level['rectangle'][1]+lineSpace))
+                lineSpace += lineSpaceInc
+        if level['completed']:
+            DISPLAYSURF.blit(checkBox, (level['rectangle'][0]+60, level['rectangle'][1]-10))
 
-    menuButtonSurface = pygame.Surface((30,30))
+    menuButtonSurface = pygame.Surface((48,48))
 
     for event in pygame.event.get(): 
         if event.type == pygame.QUIT:
@@ -837,7 +910,6 @@ def mineScreen():
         elif not menuRect.collidepoint(mouse_pos):
             menuButtonOpacity = 0
 
-        
 
         for level in levelSelect:
             if level['rectangle'].collidepoint(mouse_pos):
@@ -845,16 +917,17 @@ def mineScreen():
                     if profit >= level['cost'] and not level['purchased']:
                         level['purchased'] = True
                         profit -= level['cost']
+                        if sfxOn:
+                            clickButtonSound.play()
                     elif level['purchased']:
                         currentLevel = level['levelNumber']
                         levelActive = True
                         displayMine = False
+                        changeMusic('gameAssets/audio/levelPlay.ogg')
 
     menuButtonSurface.set_alpha(menuButtonOpacity)     
-    menuButtonSurface.fill((255,255,255))     
-    DISPLAYSURF.blit(menuButtonSurface, (680,860))
-
-
+    menuButtonSurface.fill((0,0,0))     
+    DISPLAYSURF.blit(menuButtonSurface, (660,840))
 
     pygame.display.flip()
 
@@ -908,7 +981,7 @@ async def main():
                 if initializeLevel:
 
                     scrollSpeed = 2
-                    level1StopScrolling = False
+                    checkStopScrolling = False
 
                     all_backgrounds = pygame.sprite.Group()
                     all_floors = pygame.sprite.Group()
@@ -959,7 +1032,10 @@ async def main():
                 if not keys[pygame.K_a] and not keys[pygame.K_d]:
                     player.direction = 0
 
-                player.rect.y += 3
+                if not checkStopScrolling:
+                    player.rect.y += 3
+                if checkStopScrolling:
+                    player.rect.y += 3 + scrollSpeed
 
                 collisions = pygame.sprite.spritecollide(player, all_floors, False)
                 if collisions:
@@ -970,15 +1046,22 @@ async def main():
                 collisions = pygame.sprite.spritecollide(player, bottom_floors, False)
                 if collisions:
                     player.rect.bottom = collisions[0].rect.top - 1
-                    player.direction = 0
+                    if keys[pygame.K_a]:
+                        player.direction = -1
+                    elif keys[pygame.K_d]:
+                        player.direction = 1
+                    else:
+                        player.direction = 0
 
                 if player.rect.y <= 0:
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     displayMine = True
 
                 if pygame.sprite.collide_rect(player, finish):
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
@@ -1056,8 +1139,14 @@ async def main():
                 if not keys[pygame.K_w] and not keys[pygame.K_s] and not keys[pygame.K_a] and not keys[pygame.K_d]:
                     player.direction = 0
 
+                if keys[pygame.K_r]:
+                    levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
+                    initializeLevel = True
+                    displayMine = True
                 if pygame.sprite.collide_rect(player, finish):
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
@@ -1083,6 +1172,10 @@ async def main():
                     torchLight_rect.center = (player.rect.x+16,player.rect.y+16)
                 DISPLAYSURF.blit(torchLight, torchLight_rect)
                 
+
+                pygame.draw.rect(DISPLAYSURF, GRAY, (275,800,165,50),border_radius=2)
+                drawTitle('USE R to quit level.', 277,820,font4)
+
                 pygame.display.flip()
 
 
@@ -1143,6 +1236,7 @@ async def main():
                     player.direction = 0
                 if player.rect.x <= -16:
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     displayMine = True
 
@@ -1150,6 +1244,7 @@ async def main():
                     player.rect.x = 684
                 if player.rect.x >= 704 and finish:
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
@@ -1227,16 +1322,15 @@ async def main():
                     DISPLAYSURF.blit(level3Finish, (650,495))
                 switch_sprites.update()
                 player.update(frame)
-                DISPLAYSURF.blit(player.image,player.rect)
                 switch_sprites.draw(DISPLAYSURF)
-               
-
+                DISPLAYSURF.blit(player.image,player.rect)
+                
                 pygame.display.flip()
 
 
 
 
-            #level 4, navigate to the end through enemies (like a standard mario level)
+            #level 4 and level 6, navigate to the end through enemies (like a standard mario level)
             if currentLevel == 3 or currentLevel == 5:
 
                 if initializeLevel: 
@@ -1358,29 +1452,40 @@ async def main():
                         enemey.spotted = True
 
                 for enemey in all_enemey3:
+
+                    collisions = pygame.sprite.spritecollide(enemey,all_floors,False)
+                    if collisions:
+                        if enemey.isJumping:
+                            enemey.rect.top = collisions[0].rect.bottom
+                            enemey.isJumping = False
+                        else:
+                            enemey.rect.bottom = collisions[0].rect.top
+                            enemey.isGrounded = True
+                    elif not collisions:
+                        enemey.isGrounded = False
+
                     enemey.rect.y += gravity//2
-                    if enemey.isGrounded == True:
+                    if enemey.isGrounded == True and enemey.isJumping == False:
                         if frame >= 59:
-                            random_int   = random.randint(1,10)
+                            random_int = random.randint(1,10)
                             if random_int <= 5 and enemey.isGrounded:
                                 enemey.isGrounded = False
                                 enemey.startingY = enemey.rect.y
                                 enemey.isJumping = True
                                 
-                    collisions = pygame.sprite.spritecollide(enemey,all_floors,False)
-                    if collisions:
-                        enemey.rect.bottom = collisions[0].rect.top
-                        enemey.isGrounded = True
+
 
                 if (pygame.sprite.spritecollide(player,all_enemey1,False) or 
                     pygame.sprite.spritecollide(player,all_enemey2,False) or
                     pygame.sprite.spritecollide(player,all_enemey3,False) or
                     pygame.sprite.spritecollide(player,all_dynamite,False)): #Level failed
                         levelActive = False
+                        changeMusic('gameAssets/audio/backgroundMusic.ogg')
                         initializeLevel = True
                         displayMine = True
                 if pygame.sprite.spritecollide(player, finish_blocks, False): #Level Completed
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
@@ -1413,8 +1518,10 @@ async def main():
                 pygame.display.flip()
 
 
-            #level 5, a minecart sidescroller (like geometry dash)
-            if currentLevel == 4:
+
+
+            #level 5 and level 8, a minecart sidescroller (like geometry dash)
+            if currentLevel == 4 or currentLevel == 7:
                 if initializeLevel:
                     
                     scrollSpeed = 4
@@ -1436,7 +1543,13 @@ async def main():
                     background_sprites.add(background1, background2, background3, background4, background5)
                     step = 0
                     stepX = 0
-                    for i, row in enumerate(levelMap4):
+
+                    if currentLevel == 4:
+                        lm = levelMap4
+                    elif currentLevel == 7:
+                        lm = levelMap7
+
+                    for i, row in enumerate(lm):
                         currentY = (step * 32)
                         if (i+1) % 28 == 0: 
                             step = 0
@@ -1488,11 +1601,13 @@ async def main():
                 
                 if pygame.sprite.spritecollide(player, kill_blocks, False) or player.rect.y >= 800:
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     displayMine = True
 
                 if pygame.sprite.collide_rect(player, finish):
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
@@ -1656,11 +1771,13 @@ async def main():
                     pygame.sprite.spritecollide(player, all_dynamite, False)):
                     
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     displayMine = True
 
                 if pygame.sprite.spritecollide(player, all_finish, False):
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
@@ -1685,30 +1802,7 @@ async def main():
 
                 pygame.display.flip()
 
-            #level 8, a puzzle
-            if currentLevel == 7:
-                if initializeLevel: 
-                    initializeLevel = False
-
-                mouse_pressed = pygame.mouse.get_pressed()
-                mouse_pos = pygame.mouse.get_pos()
-                for event in pygame.event.get(): 
-                    if event.type == pygame.QUIT:
-                        pygame.quit()
-                        sys.exit()
-
-                if mouse_pressed[0]: #Level failed
-                    levelActive = False
-                    initializeLevel = True
-                    displayMine = True
-                if mouse_pressed[2]: #Level Completed
-                    levelActive = False
-                    initializeLevel = True
-                    levelSelect[currentLevel]['completed'] = True
-                    displayMine = True
-
-                DISPLAYSURF.blit(background,(0,0))
-                pygame.display.flip()
+            
 
             #level 9, Waves of enemies coming from both left and right and you need to defeat them all
             if currentLevel == 8:
@@ -1729,7 +1823,7 @@ async def main():
                     currentX = 0
                     for item in levelMap8[0]: #enemies that come from the left
                         if item == 'a': #enemy type
-                            e = Level8Enemy1(currentX, spawnLevelY)
+                            e = Level8Enemy1(currentX, spawnLevelY+16)
                             all_enemy1.add(e)
                             all_enemy.add(e)
                         elif item == 'b': #enemey type
@@ -1742,7 +1836,7 @@ async def main():
                     currentX = 720
                     for item in levelMap8[1]: #enemies that come from the right
                         if item == 'a': #enemy type
-                            e = Level8Enemy1(currentX, spawnLevelY)
+                            e = Level8Enemy1(currentX, spawnLevelY+16)
                             all_enemy1.add(e)
                             all_enemy.add(e)
                         elif item == 'b': #enemey type
@@ -1782,6 +1876,7 @@ async def main():
                     finishOffset += 64
                 if enemiesDefeated and player.rect.x >= 700:
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
@@ -1793,6 +1888,7 @@ async def main():
                             collision.kill()
                         else:
                             levelActive = False
+                            changeMusic('gameAssets/audio/backgroundMusic.ogg')
                             initializeLevel = True
                             displayMine = True
                     elif player.attacking and player.previousDirection == 2:
@@ -1800,15 +1896,17 @@ async def main():
                             collision.kill()
                         else:
                             levelActive = False
+                            changeMusic('gameAssets/audio/backgroundMusic.ogg')
                             initializeLevel = True
                             displayMine = True
                     else:
                         levelActive = False
+                        changeMusic('gameAssets/audio/backgroundMusic.ogg')
                         initializeLevel = True
                         displayMine = True
 
                 player.update(frame)
-                all_enemy.update(player.rect.x)
+                all_enemy.update(player.rect.x,frame)
 
                 
                 DISPLAYSURF.blit(level1Background,(0,-40))
@@ -1910,11 +2008,13 @@ async def main():
 
                 if  pygame.sprite.collide_rect(player, lava):
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     displayMine = True
 
                 if pygame.sprite.collide_rect(player, finish):
                     levelActive = False
+                    changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True

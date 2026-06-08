@@ -69,6 +69,10 @@ bat1 = pygame.image.load('gameAssets/bat1.png')
 bat2 = pygame.image.load('gameAssets/bat2.png')
 skeleton1 = pygame.image.load('gameAssets/skeleton1.png')
 skeleton2 = pygame.image.load('gameAssets/skeleton2.png')
+skeletonLeft1 = pygame.image.load('gameAssets/skeletonLeft1.png')
+skeletonLeft2 = pygame.image.load('gameAssets/skeletonLeft2.png')
+skeletonRight1 = pygame.image.load('gameAssets/skeletonRight1.png')
+skeletonRight2 = pygame.image.load('gameAssets/skeletonRight2.png')
 ratRight1 = pygame.image.load('gameAssets/ratRight1.png')
 ratRight2 = pygame.image.load('gameAssets/ratRight2.png')
 ratLeft1 = pygame.image.load('gameAssets/ratLeft1.png')
@@ -147,15 +151,16 @@ class Player(pygame.sprite.Sprite):
 		self.image = minerIdle
 		self.rect = self.image.get_rect(topleft=(x,y))
 		self.direction = 0
+		self.animationSpeed = 15
 
 	def update(self,frame):
 		if self.direction == -1:
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerLeftWalk
 			else:
 				self.image = minerLeftWalk2
 		elif self.direction == 1:
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerRightWalk
 			else:
 				self.image = minerRightWalk2
@@ -275,25 +280,27 @@ class PlayerTopView(pygame.sprite.Sprite):
 		self.image = minerTopViewIdle
 		self.rect = self.image.get_rect(topleft=(x,y))
 		self.direction = 0
+		self.animationSpeed = 30
+		
 
 	def update(self,frame):
 		if self.direction == 1: #left
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerTopView7
 			else:
 				self.image = minerTopView8
 		elif self.direction == 2: #right
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerTopView5
 			else:
 				self.image = minerTopView6
 		elif self.direction == 3: #up
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerTopView1
 			else:
 				self.image = minerTopView2
 		elif self.direction == 4: #down
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerTopView3
 			else:
 				self.image = minerTopView4
@@ -674,11 +681,12 @@ class Level8Player(pygame.sprite.Sprite):
 		self.attacking = False
 		self.attackingTrack = 0
 		self.attackingCooldown = 0
+		self.animationSpeed = 15
 		
 
 	def update(self,frame):
 		if self.direction == 1:
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				if self.attacking:
 					self.image = minerIdleJump
 				else:
@@ -689,7 +697,7 @@ class Level8Player(pygame.sprite.Sprite):
 				else:
 					self.image = minerLeftWalk2
 		elif self.direction == 2:
-			if frame <= 30:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
 				if self.attacking:
 					self.image = minerIdleJump
 				else:
@@ -726,29 +734,45 @@ class Level8Player(pygame.sprite.Sprite):
 class Level8Enemy1(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
-		self.image = pygame.Surface((32,32))
+		self.image = ratRight2
 		self.rect = self.image.get_rect(topleft=(x,y))
-		self.image.fill((0,0,100))
 		self.direction = 0   #  different than playerDirection variable and param
+		self.animationSpeed	= 15
 
-	def update(self, playerPosX):
+	def update(self, playerPosX,frame):
 		if self.rect.x <= playerPosX:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
+				self.image = ratRight1
+			else:
+				self.image=ratRight2
 			self.rect.x += 1
 		if self.rect.x >= playerPosX:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
+				self.image = ratLeft1
+			else:
+				self.image=ratLeft2
 			self.rect.x -= 1
 
 class Level8Enemy2(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
-		self.image = pygame.Surface((32,32))
+		self.image = skeleton1
 		self.rect = self.image.get_rect(topleft=(x,y))
-		self.image.fill((0,0,255))
 		self.direction = 0   #  different than playerDirection variable and param
+		self.animationSpeed	= 15
 
-	def update(self, playerPosX):
+	def update(self, playerPosX,frame):
 		if self.rect.x <= playerPosX:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
+				self.image = skeletonRight1
+			else:
+				self.image=skeletonRight2
 			self.rect.x += 1
 		if self.rect.x >= playerPosX:
+			if frame%self.animationSpeed <= self.animationSpeed//2:
+				self.image = skeletonLeft1
+			else:
+				self.image=skeletonLeft2
 			self.rect.x -= 1
 
 class Level8Floor(pygame.sprite.Sprite):
@@ -804,6 +828,7 @@ class Level4Player(pygame.sprite.Sprite):
 		self.isJumping = False
 		self.startingY = self.rect.y
 		self.isGrounded = False
+		self.animationSpeed = 15
 
 	def update(self,frame):
 		if self.isJumping:
@@ -820,14 +845,14 @@ class Level4Player(pygame.sprite.Sprite):
 		if self.direction == 1:
 			if self.isJumping:
 				self.image = minerLeftJump
-			elif frame <= 30:
+			elif frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerLeftWalk
 			else:
 				self.image = minerLeftWalk2
 		if self.direction == 2:
 			if self.isJumping:
 				self.image = minerRightJump
-			elif frame <= 30:
+			elif frame%self.animationSpeed <= self.animationSpeed//2:
 				self.image = minerRightWalk
 			else:
 				self.image = minerRightWalk2
