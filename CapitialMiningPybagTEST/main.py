@@ -11,7 +11,7 @@ from sprites import *
 import asyncio
 
 #initialize Pygame 
-pygame.mixer.pre_init(buffer=4096)
+pygame.mixer.pre_init(buffer=8192)
 pygame.init()
 pygame.mixer.init()
 levelPlayMusic = pygame.mixer.music.load("gameAssets/audio/levelPlay.ogg")
