@@ -1369,7 +1369,7 @@ async def main():
                             if block == 'p':
                                 player = Level4Player(currentX, currentY)
                             if block == 'd':
-                                new_block = Level4Dynamite(currentX, currentY+2)
+                                new_block = Level4Dynamite(currentX, currentY+8)
                                 scroll_sprites.add(new_block)
                                 all_dynamite.add(new_block)
                             if block == '1':
@@ -1409,9 +1409,9 @@ async def main():
                         pygame.quit()
                         sys.exit()
 
-                old_x, old_y = player.rect.x, player.rect.y
                 keys = pygame.key.get_pressed()
 
+                old_x = player.rect.x
                 if keys[pygame.K_a]:
                     player.rect.x -= playerSpeed
                     player.direction = 1
@@ -1421,20 +1421,31 @@ async def main():
                 if pygame.sprite.spritecollide(player, all_floors, False):
                     player.rect.x = old_x
 
+                old_y= player.rect.y
                 if keys[pygame.K_SPACE] and player.isGrounded:
                     player.isJumping = True
                     player.isGrounded = False
                     player.startingY = player.rect.y
 
+                if player.isJumping:
+                    player.rect.y -= 12
 
 
                 player.rect.y += gravity
+                
                 collisions = pygame.sprite.spritecollide(player,all_floors,False)
-                if collisions:
-                    if not player.isJumping:
-                        player.rect.bottom = collisions[0].rect.top
+                
+                player.isGrounded = False
+                for floor in collisions:
+                    # Player was above the block last frame, so they landed on top
+                    if old_y + player.rect.height <= floor.rect.top:
+                        player.rect.bottom = floor.rect.top
                         player.isGrounded = True
-                    if player.isJumping and player.rect.y <= player.startingY-32:
+                        player.isJumping = False
+
+                    # Player was below the block last frame, so they hit the ceiling
+                    elif old_y >= floor.rect.bottom:
+                        player.rect.top = floor.rect.bottom
                         player.isJumping = False
                         
 
@@ -1514,7 +1525,7 @@ async def main():
                 finish_blocks.draw(DISPLAYSURF)
                 DISPLAYSURF.blit(finishSign.image,finishSign.rect)
                 DISPLAYSURF.blit(player.image, player.rect)
-                #pygame.draw.rect(DISPLAYSURF, RED, player.rect, 2)
+                
                 
                 pygame.display.flip()
 
@@ -1565,7 +1576,7 @@ async def main():
                             if block == 'p':
                                 player = PlayerMinecart(currentX, currentY)
                             if block == 'k':
-                                new_block = SidescrollKillBlock(currentX, currentY)
+                                new_block = SidescrollKillBlock(currentX, currentY+8)
                                 kill_blocks.add(new_block)
                             if block == 'f':
                                 finish = MinecartFinishBlock(currentX, currentY)
@@ -1576,7 +1587,7 @@ async def main():
                                 new_block = SidescrollDownRail(currentX, currentY)
                                 down_rails.add(new_block)
                             if block == 's':
-                                new_block = SidescrollStraightRail(currentX, currentY)
+                                new_block = SidescrollStraightRail(currentX, currentY+29)
                                 straight_rails.add(new_block)
                             if block == '1':
                                 new_item = SidescrollUpRailTopLeft(currentX,currentY)
@@ -1600,7 +1611,7 @@ async def main():
                         pygame.quit()
                         sys.exit()
                 
-                if pygame.sprite.spritecollide(player, kill_blocks, False) or player.rect.y >= 800:
+                if pygame.sprite.spritecollide(player, kill_blocks, False):
                     levelActive = False
                     changeMusic('gameAssets/audio/backgroundMusic.ogg')
                     initializeLevel = True
@@ -1612,35 +1623,58 @@ async def main():
                     initializeLevel = True
                     levelSelect[currentLevel]['completed'] = True
                     displayMine = True
-                
-                if pygame.sprite.spritecollide(player, straight_rails, False):
+
+                onStraightRail = pygame.sprite.spritecollide(player, straight_rails, False)
+                onUpRail = pygame.sprite.spritecollide(player, up_rails, False)
+                onDownRail = pygame.sprite.spritecollide(player, down_rails, False)
+
+                if onStraightRail:
                     player.image = minecartPlayer
-                if pygame.sprite.spritecollide(player, up_rails, False):
-                    player.rect.y -= 10
+                    player.isGrounded = True
+                    player.isJumping = False
+                    player.rect.bottom = onStraightRail[0].rect.bottom - 2
+                elif onUpRail:
+                    player.isGrounded = True
+                    player.isJumping = False
+                    player.rect.y -=11
                     rotatePlayerImage = pygame.transform.rotate(minecartPlayer,45)
                     player.image = rotatePlayerImage
-                if pygame.sprite.spritecollide(player, down_rails, False):
+                elif onDownRail:
+                    player.isGrounded = True
+                    player.isJumping = False
                     player.rect.y -= 1
                     rotatePlayerImage = pygame.transform.rotate(minecartPlayer,-45)
                     player.image = rotatePlayerImage
+                else:
+                    player.isGrounded = False
+                    
                 
+
+
                 collidedFloor = pygame.sprite.spritecollide(player, all_floors, False)
                 if collidedFloor:
                     for floor in collidedFloor:
-                        if player.rect.y <= floor.rect.y:
-                            player.isGrounded = True
+                        overlap = player.rect.clip(floor.rect)
+                        if overlap.height >= 20: #collision with side of a wall
+                            levelActive = False
+                            changeMusic('gameAssets/audio/backgroundMusic.ogg')
+                            initializeLevel = True
+                            displayMine = True
                         if player.rect.y >= floor.rect.y:
-                            player.rect.y = floor.rect.y + 33
-                    player.isJumping = False
-                else:
-                    player.isGrounded = False
-                if player.rect.y <= 260:
-                    player.rect.y = 270
-                    player.isJumping = False
+                            player.rect.top = floor.rect.bottom
+                            player.isJumping = False
+
+
                 keys = pygame.key.get_pressed()
                 if keys[pygame.K_SPACE] and player.isJumping == False and player.isGrounded == True:
-                    player.startingY = player.rect.y
                     player.isJumping = True
+                    player.isGrounded = False
+                    player.startingY = player.rect.y
+
+               
+                player.rect.y += 5
+                if player.isJumping:
+                    player.rect.y -= 12
 
                 background_sprites.update(scrollSpeed)
                 all_floors.update(scrollSpeed)
@@ -1703,7 +1737,7 @@ async def main():
                                 new_e = Level6Enemy2(currentX, currentY)
                                 all_enemey2.add(new_e)
                             if block == 'd':
-                                new_d = Level6Dynamite(currentX, currentY)
+                                new_d = Level6Dynamite(currentX, currentY+8)
                                 all_dynamite.add(new_d)
                             if block == 'f':
                                 new_f = Level6Finish(currentX, currentY)

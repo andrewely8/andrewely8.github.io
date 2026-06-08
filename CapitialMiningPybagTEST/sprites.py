@@ -382,12 +382,8 @@ class PlayerMinecart(pygame.sprite.Sprite):
 		self.isGrounded = False
  
 	def update(self):
-		if self.isGrounded == False and self.isJumping == False:
-			self.rect.y += 6
-
 		if self.isJumping:
 			self.image = minecartPlayerJump
-			self.rect.y -= 6
 
 			if self.rect.y <= self.startingY - 110:
 				self.isJumping = False
@@ -660,8 +656,7 @@ class Level6Dynamite(pygame.sprite.Sprite):
 class Level6Finish(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
-		self.image = pygame.Surface((32,32))
-		self.image.fill((0,0,255))
+		self.image = level3Finish
 		self.rect = self.image.get_rect(topleft=(x,y))
 
 	def update(self, playerX, playerSpeed, direction):
@@ -831,8 +826,7 @@ class Level4Player(pygame.sprite.Sprite):
 		self.animationSpeed = 15
 
 	def update(self,frame):
-		if self.isJumping:
-			self.rect.y -= 12
+
 		if self.rect.y <= self.startingY - 120:
 			self.isJumping = False
 
