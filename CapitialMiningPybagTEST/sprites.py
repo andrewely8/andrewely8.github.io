@@ -149,7 +149,8 @@ class Player(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
 		self.image = minerIdle
-		self.rect = self.image.get_rect(topleft=(x,y))
+		self.rect = pygame.Rect(x,y,16,26)
+		self.hitboxOffset = (8,6)
 		self.direction = 0
 		self.animationSpeed = 15
 
@@ -173,16 +174,15 @@ class PlayerLevel10(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
 		self.image = minerIdle
-		self.rect = self.image.get_rect(topleft=(x,y))
+		self.rect = pygame.Rect(x,y,16,26)
+		self.hitboxOffset = (8,6)
 		self.direction = 0
 		self.isJumping = False
 		self.startingY = self.rect.y
 		self.isGrounded = False
 
 	def update(self,frame):
-		if self.isJumping:
-			self.rect.y -= 12
-		if self.rect.y <= self.startingY - 120:
+		if self.rect.y <= self.startingY - 110:
 			self.isJumping = False
 
 		if self.direction == 0:
@@ -593,7 +593,8 @@ class Level6Player(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
 		self.image = minerSwimmingIdle
-		self.rect = self.image.get_rect(topleft=(x,y))
+		self.rect = pygame.Rect(x,y,16,26)
+		self.hitboxOffset = (8,6)
 		self.direction = 0   #  different than playerDirection variable and param
 
 	def update(self, playerDirection,frame):
@@ -670,7 +671,8 @@ class Level8Player(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
 		self.image = minerIdle
-		self.rect = self.image.get_rect(topleft=(x,y))
+		self.rect = pygame.Rect(x,y,16,26)
+		self.hitboxOffset = (8,6)
 		self.direction = 0   #  different than playerDirection variable and param
 		self.previousDirection = 1
 		self.attacking = False
@@ -818,7 +820,8 @@ class Level4Player(pygame.sprite.Sprite):
 	def __init__(self,x,y):
 		super().__init__()
 		self.image = minerIdle
-		self.rect = self.image.get_rect(topleft=(x,y))
+		self.rect = pygame.Rect(x,y,16,26)
+		self.hitboxOffset = (8,6)
 		self.direction = 0 #0:idle  1:left  2:right  3:up  4:down
 		self.isJumping = False
 		self.startingY = self.rect.y

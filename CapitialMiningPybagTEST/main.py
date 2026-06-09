@@ -37,7 +37,7 @@ font3 = pygame.font.Font('gameAssets/fonts/BoldPixels.ttf', 24)
 font4 = pygame.font.Font('gameAssets/fonts/BoldPixels.ttf', 18)
 
 #set windows icon (top left of window)
-pygame.display.set_icon(logo) 
+pygame.display.set_icon(logo)
 
 #game variables
 running = True
@@ -1021,10 +1021,10 @@ async def main():
                 old_x, old_y = player.rect.x, player.rect.y
                 keys = pygame.key.get_pressed()
 
-                if keys[pygame.K_a] and player.rect.x >= 8:
+                if keys[pygame.K_a] and player.rect.x >= 12:
                     player.rect.x -= 3
                     player.direction = -1
-                if keys[pygame.K_d] and player.rect.x <= 680:
+                if keys[pygame.K_d] and player.rect.x <= 690:
                     player.rect.x += 3
                     player.direction = 1
                 if pygame.sprite.spritecollide(player, all_floors, False):
@@ -1083,7 +1083,9 @@ async def main():
                 pygame.draw.rect(DISPLAYSURF, BLACK, (712,0,8,900))
                 all_floors.draw(DISPLAYSURF)
                 bottom_floors.draw(DISPLAYSURF)
-                DISPLAYSURF.blit(player.image, player.rect)
+                #Adjust the players hitbox
+                playerHitbox = (player.rect[0]-player.hitboxOffset[0],player.rect[1]-player.hitboxOffset[1])
+                DISPLAYSURF.blit(player.image, playerHitbox)
                 DISPLAYSURF.blit(finish.image,finish.rect)
 
                 pygame.display.flip()
@@ -1524,7 +1526,9 @@ async def main():
                 all_enemey3.draw(DISPLAYSURF)
                 finish_blocks.draw(DISPLAYSURF)
                 DISPLAYSURF.blit(finishSign.image,finishSign.rect)
-                DISPLAYSURF.blit(player.image, player.rect)
+                #Adjust the players hitbox
+                playerHitbox = (player.rect[0]-player.hitboxOffset[0],player.rect[1]-player.hitboxOffset[1])
+                DISPLAYSURF.blit(player.image, playerHitbox)
                 
                 
                 pygame.display.flip()
@@ -1825,7 +1829,8 @@ async def main():
                 all_enemey1.update(playerSpeed, direction)
                 
                 DISPLAYSURF.blit(level6Background , (0,0))
-                DISPLAYSURF.blit(player.image, player.rect)
+                playerHitbox = (player.rect[0]-player.hitboxOffset[0],player.rect[1]-player.hitboxOffset[1])
+                DISPLAYSURF.blit(player.image, playerHitbox)
                 all_floors.draw(DISPLAYSURF)
                 all_enemey1.draw(DISPLAYSURF)
                 all_enemey2.draw(DISPLAYSURF)
@@ -1848,7 +1853,7 @@ async def main():
                     finishOffset = 0
                     enemiesDefeated = False
 
-                    player = Level8Player(350,spawnLevelY)
+                    player = Level8Player(350,spawnLevelY+8)
                     floor = Level8Floor(-50,600)
                     all_enemy1 = pygame.sprite.Group()
                     all_enemy2 = pygame.sprite.Group()
@@ -1949,8 +1954,11 @@ async def main():
                 all_enemy.draw(DISPLAYSURF)
                 if enemiesDefeated:
                     DISPLAYSURF.blit(level3Finish, (650,330))
-                DISPLAYSURF.blit(player.image, player.rect)
+                playerHitbox = (player.rect[0]-player.hitboxOffset[0],player.rect[1]-player.hitboxOffset[1])
+                DISPLAYSURF.blit(player.image, playerHitbox)
                 DISPLAYSURF.blit(floor.image, floor.rect)
+
+
 
 
 
@@ -1963,6 +1971,7 @@ async def main():
                     scrollSpeed = 1
                     level10StopScrolling = False
                     gravity = 6
+                    jumpHeight = 6
 
                     all_backgrounds = pygame.sprite.Group()
                     all_floors = pygame.sprite.Group()
@@ -1981,6 +1990,7 @@ async def main():
                             if block == 'e':
                                 new_floor = topFloorBlockLevel10(currentX, currentY)
                                 bottom_floors.add(new_floor)
+                                all_floors.add(new_floor)
                             if block == 'f':
                                 finish = FinishBlockLevel10(currentX, currentY)
 
@@ -2003,13 +2013,13 @@ async def main():
                         pygame.quit()
                         sys.exit()
 
-                old_x, old_y = player.rect.x, player.rect.y
+                old_x = player.rect.x
                 keys = pygame.key.get_pressed()
 
-                if keys[pygame.K_a] and player.rect.x >= 8:
+                if keys[pygame.K_a] and player.rect.x >= 12:
                     player.rect.x -= 3
                     player.direction = 1
-                if keys[pygame.K_d] and player.rect.x <= 680:
+                if keys[pygame.K_d] and player.rect.x <= 690:
                     player.rect.x += 3
                     player.direction = 2
                 if pygame.sprite.spritecollide(player, all_floors, False):
@@ -2018,28 +2028,33 @@ async def main():
                 if not keys[pygame.K_a] and not keys[pygame.K_d]:
                     player.direction = 0
 
-                player.rect.y += gravity
-                if keys[pygame.K_SPACE] and player.isGrounded and player.isJumping == False:
+
+                old_y= player.rect.y
+                if keys[pygame.K_SPACE] and player.isGrounded and not player.isJumping:
                     player.isJumping = True
-                    player.isGrounded = False 
+                    player.isGrounded = False
                     player.startingY = player.rect.y
 
-                collisions = pygame.sprite.spritecollide(player, all_floors, False)
-                if collisions:
-                    if not player.isJumping:
-                        player.rect.bottom = collisions[0].rect.top
+                if player.isJumping:
+                    player.rect.y -= jumpHeight
+                else:
+                    player.rect.y += gravity
+               
+                  
+                collisions = pygame.sprite.spritecollide(player,all_floors,False)
+                player.isGrounded = False
+                for floor in collisions:
+                    # Player was above the block last frame, so they landed on top
+                    if old_y + player.rect.height <= floor.rect.top:
+                        player.rect.bottom = floor.rect.top
                         player.isGrounded = True
-                    if player.isJumping and player.rect.y <= player.startingY-32:
                         player.isJumping = False
-
-                collisions = pygame.sprite.spritecollide(player, bottom_floors, False)
-                if collisions:
-                    if not player.isJumping:
-                        player.rect.bottom = collisions[0].rect.top
-                        player.isGrounded = True
-                    if player.isJumping and player.rect.y <= player.startingY-32:
+                    # Player was below the block last frame, so they hit the ceiling
+                    elif old_y >= floor.rect.bottom:
+                        player.rect.top = floor.rect.bottom
                         player.isJumping = False
-                
+                    else:
+                        print("AA")
 
                 if  pygame.sprite.collide_rect(player, lava):
                     levelActive = False
@@ -2057,7 +2072,7 @@ async def main():
 
                 player.update(frame)
                 finish.update(scrollSpeed)
-                bottom_floors.update(scrollSpeed)
+                #bottom_floors.update(scrollSpeed)
                 lava.update(scrollSpeed)
 
 
@@ -2077,9 +2092,12 @@ async def main():
                 pygame.draw.rect(DISPLAYSURF, BLACK, (712,0,8,900))
                 all_floors.draw(DISPLAYSURF)
                 bottom_floors.draw(DISPLAYSURF)
-                DISPLAYSURF.blit(player.image, player.rect)
+                playerHitbox = (player.rect[0]-player.hitboxOffset[0],player.rect[1]-player.hitboxOffset[1])
+                DISPLAYSURF.blit(player.image, playerHitbox)
                 DISPLAYSURF.blit(finish.image,finish.rect)
                 DISPLAYSURF.blit(lava.image,lava.rect)
 
                 pygame.display.flip()
+
+
 asyncio.run(main())
