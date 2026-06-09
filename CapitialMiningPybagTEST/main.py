@@ -75,15 +75,16 @@ gameLaunchMessage = [
 
 
 hints = [
-            [["Welcome to the Store!","Here you will buy businesses to gain money,", "purchase your first business!"],100,325,500,90],
-            [["Once you have a garden shovel,", "start using it!"],120,325,480,60],
-            [["Managers run your businesses for you,","so you don't have to.","Buy your first manager!"],120,600,480,90],
-            [["Buy mode lets you buy many", "of one business in one click!"],260,3,360,60],
-            [["The speed of a business increases the more you buy!","every 25 of each business you own", "will increase that businesses speed."],70,555,580,80],
-            [["Don't forget to check on your Mines!"],255,855,400,30],
-            [["Upgrades increase a businesses profit!"],100,855,415,30],
-        ]
+    [["Welcome to the Store!","Here you will buy businesses to gain money,", "purchase your first business!"],100,325,500,90],
+    [["Once you have a garden shovel,", "start using it!"],120,325,480,60],
+    [["Managers run your businesses for you,","so you don't have to.","Buy your first manager!"],120,600,480,90],
+    [["Buy mode lets you buy many", "of one business in one click!"],260,3,360,60],
+    [["The speed of a business increases the more you buy!","every 25 of each business you own", "will increase that businesses speed."],70,555,580,80],
+    [["Don't forget to check on your Mines!"],255,855,400,30],
+    [["Upgrades increase a businesses profit!"],100,855,415,30],
+]
 hintCheckPoints = [0,0,1000,2000,3000,4000,250000]
+
 hintArrows = [
     Arrow("down",26,24),
     Arrow("left",500,100),
@@ -92,6 +93,7 @@ hintArrows = [
     None,
     Arrow("down",670,780),
     Arrow("right",30,805)]
+
 hintProgress = 0
 hintButtonActive = True
 hintButton = pygame.Rect(hints[0][1], hints[0][2], hints[0][3], hints[0][4])
