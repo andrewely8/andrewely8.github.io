@@ -21,17 +21,27 @@
       }
 
       #topInfo {
-            height: 200px;
+            
             margin-left: 10%;
             margin-right: 10%;
             margin-top: 2%;
             margin-bottom: 2%;
+            padding: 2%;
             background-color: #00A8E8;
             border-style: solid;
             box-sizing: border-box;
             border-radius: 25px;
             border-width: 2px;
-            padding: 2%;
+            justify-content: center;
+        }
+
+      .topInfoText {
+            text-align:center;
+            margin-top: 0;
+            margin-bottom: 0;
+            font-size: 16pt;
+            font-weight: 700;
+            color: #00171F;
         }
 
     </style>
@@ -40,8 +50,11 @@
   <body>
 
     <div id = "topInfo">
-        TOP INFO AREA
-        <button onclick="history.back()">BACK</a>
+        <p class ="topInfoText">This is a undergraduate level Mathematics research project I did during my senior year at Rutgers. I wrote a draft of a paper which summarizes my results of the project. The topic is Discrete Ricci Flow, which adopts the differential geometry Ricci Flow and applies it to discrete metric spaces like graph networks. Discrete versions of geometric topics is an emerging area of research, with certain theoretical geometry having practical use in algorithms in Computer Science.
+        </p>
+        <p class = "topInfoText">Thanks for checking it out!</p>
+        
+        
     </div>
 
     <embed src="paper.pdf" width="800px" height="900px" />
