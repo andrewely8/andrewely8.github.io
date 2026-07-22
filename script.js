@@ -23,3 +23,17 @@ window.addEventListener("mousemove", (e) => {
 window.addEventListener("scroll", () => {
   updateGradient();
 });
+
+function copyEmailToClipboard(event) {
+  
+  event.preventDefault();
+  const email = "andrewely08@gmail.com";
+  const message = document.getElementById('copyClipboardMsg');
+  navigator.clipboard.writeText(email);
+  
+  message.classList.remove("fade");
+  void message.offsetWidth;
+  message.classList.add("fade");
+
+
+}

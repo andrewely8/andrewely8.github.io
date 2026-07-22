@@ -29,6 +29,19 @@
          background-color: var(--PALLETE_COLOR1);
       }
 
+      .contactArea {
+        animation: 0.5s  alternate slide-in;
+        margin-left: 5%;
+        padding: 2%;
+      }
+
+      .contactLine {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 2%;
+      }
+
       .portfolioTitleHeader {
         text-align: left;
         margin-left: 5%;
@@ -81,6 +94,7 @@
         margin:0;
         z-index: 3;
         color: #00171F;
+        animation: fade-in 1.5s;
       } 
 
       .portfolioProjectBubble #liveSiteLink {
@@ -90,6 +104,7 @@
         margin:0;
         z-index: 3;
         color: #00171F;
+        animation: fade-in 2.5s;
       }
 
       .bubbleLink {
@@ -108,6 +123,24 @@
       }
 
 
+      #copyClipboardMsg {
+        opacity: 0;
+        font-size: 12pt;
+        text-align: center;
+        border-radius: 6px;
+        padding: 1%;
+        background-color: black;
+        color: #ffffff;
+        position: absolute;
+        left:50%;
+        transform: translateX(-50%);
+        bottom:70%;
+        width:75px;
+      }
+
+      #copyClipboardMsg.fade {
+        animation: fade-in-2 1s ease-in-out;
+      }
 
 
       .tooltip {
@@ -136,6 +169,10 @@
 
       .tooltip:hover .tooltiptext {
         visibility: visible;
+      }
+
+      .contactLink:hover {
+        text-decoration: underline;
       }
 
 
@@ -178,6 +215,41 @@
         color: #00171F;
       }
 
+      #linkedinIcon {
+        color: #0188D1;
+      }
+
+      #linkedinLink {
+        margin-left: 2%;
+        font-size: 16pt;
+        color: black;
+        text-decoration: none;
+      }
+
+      #maingithubIcon {
+        color: black;
+      }
+
+      #maingithubLink {
+        margin-left: 2%;
+        font-size: 16pt;
+        color: black;
+        text-decoration: none;
+      }
+
+      #emailIcon {
+        color: black;
+      }
+
+      #emailLink {
+        position: relative;
+        margin-left: 2%;
+        font-size: 16pt;
+        color: black;
+        text-decoration: none;
+      }
+
+
       #authorBio {
         animation: 0.5s  alternate slide-in;
         text-align: left;
@@ -212,6 +284,21 @@
         }
       }
 
+
+      @keyframes fade-in {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @keyframes fade-in-2 {
+      0%, 100% {opacity: 0;}
+      30%, 70% {opacity: 1;}
+    }
+
       
     </style>
   </head>
@@ -222,7 +309,47 @@
       <div id="leftScreen">
         <p id="authorName">Andrew Ely</p>
         <p id="authorBio">Software Developer</p>
+
+        <div class = "contactArea">
+
+          <div class = "contactLine" >
+            <i id ="linkedinIcon" class="fa fa-linkedin-square"
+               style="font-size:64px"></i>
+            <a id = "linkedinLink" 
+               href="https://linkedin.com/in/andrew-ely-0061882b3" 
+               target="_blank"
+            >
+              <p class = "contactLink">https://www.linkedin.com/in/andrew-ely/</p>
+            </a>
+          </div>
+
+          <div class = "contactLine">
+            <i id ="maingithubIcon" class="fa fa-github"
+               style="font-size:64px"></i>
+            <a id = "maingithubLink" 
+               href="https://github.com/andrewely8" 
+               target="_blank"
+            >
+              <p class = "contactLink">https://github.com/andrewely8</p>
+            </a>
+          </div>
+
+          <div class = "contactLine"> 
+            <i id ="emailIcon" class="fa fa-envelope" 
+               style="font-size:60px">
+            </i>
+            
+            <a id = "emailLink" href="javascript:void(0)" onclick="copyEmailToClipboard(event)">
+                <div id = "copyClipboardMsg">Copied to clipboard</div>
+                <p class = "contactLink">andrewely08@gmail.com</p>
+            </a>
+          </div>
+
+        </div>
       </div>
+
+
+
       <div id="rightScreen">
         <p id="portfolioDescription">I recently graduated Rutgers University with a B.S. in Computer Science, and minor in Mathematics. I am interested in software development, solving puzzles, and math.</p>
 
@@ -285,7 +412,7 @@
 
 
         <div class="portfolioProjectBubble">
-          <a class ="bubbleLink" href="CapitalistMining/build/web/index.html"></a>
+          <a class ="bubbleLink" href="CapitalistMining/CapitalistMining/build/web/index.html"></a>
           <div>
             <p id="title">Capitalist Mining</p>
             <p id="description">-- Game</p>
